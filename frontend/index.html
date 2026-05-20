@@ -1,0 +1,3608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧绿氢管理系统</title>
+
+    <!-- 引入样式 - 按优先级顺序加载 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="css/unified-dashboard.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/power-colors.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.css">
+    
+    <!-- 系统特定样式优化 -->
+    <style>
+        /* 强制应用现代化深灰配色方案 */
+        :root {
+            --bg-primary: #1a1a1a !important;
+            --bg-secondary: #2a2a2a !important;
+            --bg-tertiary: #2e2e2e !important;
+            --bg-card: #2a2a2a !important;
+            --bg-hover: #3a3a3a !important;
+            --border-color: #404040 !important;
+            --border-light: #505050 !important;
+            --divider: #3a3a3a !important;
+            
+            /* 统一配色方案 - 只有两种颜色 */
+            --page-bg: #1a1a1a !important; /* 页面背景黑灰色 */
+            --content-bg: #2a2a2a !important; /* 内容背景灰色（与能量管理图表背景一致） */
+        }
+        
+        /* === 1. 统一所有页面背景为页面背景色 === */
+        body, html, #app, .main-content, .page-content,
+        .production-settings-page, .data-analysis-container, .report-analysis-container {
+            background-color: var(--page-bg) !important; 
+            background: var(--page-bg) !important;
+        }
+        
+        /* === 2. 统一所有内容区域为内容背景色 === */
+        .card, .modern-card, .content-card, 
+        .chart-container, .table-container, 
+        .system-status, .data-table-container, 
+        .power-curve, .system-data,
+        .status-grid, .status-item,
+        #powerCurveChart, #powerGenerationChart, #hydrogenProductionChart, #utilizationChart,
+        .chart-card, .chart-card .modern-card-body,
+        .data-analysis-controls, .report-analysis-controls,
+        .production-info-section, .production-units-section,
+        .equipment-info, .fault-table,
+        .modern-card-body, .card-content {
+            background: var(--content-bg) !important;
+            background-color: var(--content-bg) !important;
+        }
+
+        /* === 3. 统一所有表格和行的背景 === */
+        .fault-table th, .fault-table td,
+        .data-table, .data-table th, .data-table td,
+        .data-table-modern, .data-table-modern th, .data-table-modern td {
+            background-color: var(--content-bg) !important;
+        }
+
+        .fault-table tr:hover, .fault-table tr:hover td,
+        .data-table tr:hover, .data-table tr:hover td,
+        .data-table-modern tr:hover, .data-table-modern tr:hover td {
+            background-color: rgba(58, 58, 58, 0.8) !important; /* 稍微亮一点的悬停色 */
+        }
+
+        /* === 4. 统一所有卡片头部背景 === */
+        .modern-card-header, .card-header, .card-title {
+            background: var(--content-bg) !important;
+            background-color: var(--content-bg) !important;
+        }
+
+        /* === 5. 确保导航栏也使用统一配色 === */
+        .header, .navbar, .main-nav {
+            background-color: var(--page-bg) !important;
+            background: var(--page-bg) !important;
+        }
+
+        .el-menu--horizontal {
+            background-color: var(--page-bg) !important;
+        }
+
+        .el-menu--horizontal .el-menu-item {
+            background-color: transparent !important;
+        }
+
+        .el-menu--horizontal .el-menu-item:hover,
+        .el-menu--horizontal .el-menu-item.is-active {
+            background-color: var(--content-bg) !important;
+        }
+        
+        /* === 1. 进一步统一页面和图表背景色 === */
+        /* 页面整体背景色统一 */
+        body, html, #app, .main-content, .page-content {
+            background-color: rgba(42, 42, 42, 0.95) !important; 
+            background: rgba(42, 42, 42, 0.95) !important; /* Override gradients */
+        }
+        
+        /* 所有图表和表格区域背景完全统一 */
+        .card, .modern-card, .content-card, 
+        .chart-container, .table-container, 
+        .system-status, .data-table-container, 
+        .power-curve, .system-data,
+        .status-grid .status-item, /* 系统运行状态内部块 */
+        #powerCurveChart, #powerGenerationChart, #hydrogenProductionChart, #utilizationChart,
+        .chart-card, .chart-card .modern-card-body,
+        .data-analysis-container, .report-analysis-container,
+        .data-analysis-controls, .report-analysis-controls
+        {
+            background: rgba(42, 42, 42, 0.95) !important;
+            background-color: rgba(42, 42, 42, 0.95) !important;
+        }
+
+        /* 确保图表内部也使用统一背景 */
+        .modern-card-body, .card-content {
+            background: rgba(42, 42, 42, 0.95) !important;
+            background-color: rgba(42, 42, 42, 0.95) !important;
+        }
+        
+        /* 各区域图表和表格背景颜色统一为'系统运行状态'的图表背景颜色 */
+        .card, .modern-card, .content-card, 
+        .chart-container, .table-container, 
+        .system-status, .data-table-container, 
+        .power-curve, .system-data,
+        .status-grid .status-item /* 系统运行状态内部块 */
+        {
+            background: rgba(42, 42, 42, 0.95) !important;
+            background-color: rgba(42, 42, 42, 0.95) !important;
+            border: 1px solid rgba(64, 64, 64, 0.4) !important; /* Slightly more visible border */
+        }
+
+        .modern-card-header {
+            background: transparent !important; /* Ensure headers are transparent to show card bg */
+            border-bottom: 1px solid rgba(64, 64, 64, 0.4) !important;
+        }
+        
+        /* 强制应用到body和主要容器 */
+        body, html {
+            background-color: var(--page-bg) !important;
+        }
+        
+        #app {
+            background: var(--page-bg) !important;
+        }
+        
+        /* 确保暗色主题一致性 */
+        .card-title {
+            background-color: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* 强制应用到卡片 */
+        .card, .modern-card, .content-card {
+            background: rgba(42, 42, 42, 0.95) !important; /* 从rgba(26, 26, 26, 0.95)改为rgba(42, 42, 42, 0.95) */
+            border-color: rgba(64, 64, 64, 0.3) !important;
+        }
+        
+        /* === 1. 修复导航栏标题居中显示 === */
+        .navbar {
+            background-color: #2a2a2a !important; /* 从#1a1a1a改为#2a2a2a */
+            border-bottom-color: rgba(64, 64, 64, 0.5) !important;
+            position: relative !important;
+            display: flex !important;
+            justify-content: center !important; /* 居中对齐 */
+            align-items: center !important;
+            padding: 0 20px !important;
+            height: 60px !important; /* 增加导航栏高度 */
+        }
+        
+        .navbar-brand {
+            position: absolute !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            font-size: 20px !important;
+            font-weight: 600 !important;
+            color: var(--text-primary) !important;
+            text-align: center !important;
+        }
+        
+        /* === 2. 调整右上角时间字体大小与运行时间一致 === */
+        .header-datetime {
+            position: absolute !important;
+            right: 20px !important;
+            font-size: 16px !important; /* 与实时运行数据字体大小一致 */
+            color: var(--text-secondary) !important;
+            font-family: var(--font-mono) !important;
+            font-weight: 600 !important;
+        }
+        
+        .simulation-time, .sim-time, .sim-speed {
+            font-size: 16px !important; /* 与实时运行数据字体大小一致 */
+            color: var(--info) !important;
+            font-weight: 600 !important;
+        }
+        
+        /* 强制应用到主导航 */
+        .main-nav {
+            background-image: linear-gradient(to right, rgba(42, 42, 42, 0.9), rgba(42, 42, 42, 0.9)) !important; /* 调整 */
+            border-bottom-color: rgba(64, 64, 64, 0.5) !important;
+        }
+        
+        /* 强制应用到页面内容区域 */
+        .page-content {
+            background: #1a1a1a !important; /* 从#0a0a0a改为#1a1a1a */
+        }
+        
+        .page-content::before {
+            background: transparent !important; /* Remove overlay */
+            background-image: none !important;
+        }
+        
+        .main-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%) !important; /* 调整 */
+        }
+        
+        /* 强制应用到数据分析和报表页面 */
+        .data-analysis-container,
+        .report-analysis-container {
+            background-color: #1a1a1a !important; /* 从#0a0a0a改为#1a1a1a */
+        }
+        
+        .data-analysis-controls,
+        .report-analysis-controls {
+            background-color: rgba(42, 42, 42, 0.8) !important; /* 从rgba(26, 26, 26, 0.8)改为rgba(42, 42, 42, 0.8) */
+            border-color: rgba(64, 64, 64, 0.2) !important;
+        }
+        
+        /* 数据分析和报表分析的图表容器背景 */
+        .chart-container,
+        .table-container {
+            background-color: rgba(42, 42, 42, 0.8) !important;
+        }
+        
+        /* Element UI组件暗色主题适配 */
+        .el-menu--horizontal {
+            background-color: var(--bg-secondary) !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .el-menu--horizontal .el-menu-item {
+            border-bottom: none !important;
+            background-color: transparent !important;
+            color: var(--text-secondary) !important;
+        }
+        
+        .el-menu--horizontal .el-menu-item:hover,
+        .el-menu--horizontal .el-menu-item.is-active {
+            background-color: var(--bg-hover) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* 针对实时功率监控图表的样式优化 */
+        .power-curve .modern-card-header {
+            padding: 8px var(--spacing-lg) !important;
+            min-height: auto !important;
+            height: auto !important;
+        }
+        
+        .power-curve .modern-card-title {
+            font-size: 16px !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+        }
+        
+        .power-curve .chart-controls {
+            margin: 0 !important;
+        }
+        
+        .power-curve .time-range-indicator {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+        }
+        
+        .power-curve .modern-card-body {
+            padding: 0 !important;
+            height: calc(100% - 30px) !important;
+            min-height: calc(100% - 30px) !important;
+        }
+        
+        .power-curve #powerCurveChart {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100% !important;
+        }
+        
+        .power-curve .chart-legend-modern {
+            top: 4px !important;
+            right: 12px !important;
+            padding: 4px 8px !important;
+        }
+        
+        /* 确保右侧区域能充分利用空间 */
+        .right-column {
+            height: 100% !important;
+        }
+        
+        .power-curve {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        /* 统一优化所有modern-card-header的样式 */
+        .modern-card-header {
+            padding: 8px var(--spacing-lg) !important;
+            min-height: auto !important;
+            height: auto !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+        }
+        
+        .modern-card-title {
+            font-size: 16px !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+        }
+        
+        /* 确保所有状态指示器和控件的样式一致 */
+        .status-indicator,
+        .chart-controls,
+        .data-refresh-indicator,
+        .time-range-indicator {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+            margin: 0 !important;
+        }
+        
+        /* 特别确保系统运行状态和电网接入状态的标题栏样式 */
+        .system-status .modern-card-header,
+        .data-table-container .modern-card-header,
+        .power-curve .modern-card-header {
+            padding: 8px var(--spacing-lg) !important;
+            min-height: auto !important;
+            height: auto !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+        }
+        
+        /* 确保所有卡片主体区域高度计算一致 */
+        .modern-card-body {
+            height: calc(100% - 40px) !important;
+            min-height: calc(100% - 40px) !important;
+        }
+        
+        /* 优化图表卡片的控件区域 */
+        .chart-card .chart-controls,
+        .chart-controls {
+            margin: 0 !important;
+        }
+        
+        .chart-card .chart-time-indicator,
+        .chart-time-indicator,
+        .time-range-indicator {
+            padding: 4px 8px !important;
+            font-size: 12px !important; /* Original size */
+        }
+        
+        /* 优化图表容器高度 */
+        .chart-card .modern-card-body {
+            height: calc(100% - 40px) !important;
+            min-height: calc(100% - 40px) !important;
+        }
+        
+        .chart-card .chart-container {
+            height: 100% !important;
+        }
+        
+        .chart-card .chart-container > div {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* 优化制氢系统页面的卡片 */
+        .system-data .modern-card-body,
+        .production-settings-page .modern-card-body {
+            height: calc(100% - 40px) !important;
+            min-height: calc(100% - 40px) !important;
+        }
+        
+        /* 优化设备状态统计的控件 */
+        .total-units {
+            padding: 4px 8px !important;
+            font-size: 14px !important; /* 增大字体 */
+        }
+        
+        /* 优化电解槽状态的摘要 */
+        .units-summary {
+            margin: 0 !important;
+        }
+        
+        .summary-item {
+            padding: 4px 8px !important;
+            font-size: 14px !important; /* 增大字体 */
+        }
+        
+        /* 优化系统效率显示 */
+        .system-efficiency {
+            padding: 4px 8px !important;
+            font-size: 14px !important; /* 增大字体 */
+        }
+        
+        /* 设备状态统计表格字体大小 */
+        .status-statistics-grid .stat-label {
+            font-size: 15px !important; /* 增大标签字体 */
+            font-weight: 500 !important;
+        }
+        
+        .status-statistics-grid .stat-value {
+            font-size: 18px !important; /* 增大数值字体 */
+            font-weight: 600 !important;
+        }
+        
+        .status-stat-item.hot-standby .stat-icon,
+        .status-stat-item.hot-standby .stat-content {
+            color: #E6A23C; /* Warning color for hot standby */
+        }
+        
+        .status-stat-item {
+            padding: 8px 12px !important; /* 增加内边距 */
+        }
+        
+        .stat-content {
+            line-height: 1.4 !important; /* 调整行高 */
+        }
+        
+        /* === 修复老式卡片头部样式 === */
+        .card-header {
+            padding: 8px var(--spacing-lg) !important;
+            min-height: auto !important;
+            height: auto !important;
+        }
+        
+        .card-title {
+            font-size: 16px !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+        }
+        
+        .status-indicator {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+        }
+        
+        /* === 修复布局宽度问题 === */
+        .top-section {
+            display: flex !important;
+            gap: var(--spacing-sm) !important;
+            width: calc(33.33% - 5px) !important;
+            margin-bottom: var(--spacing-md) !important;
+        }
+        
+        .top-section .card {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+        
+        .middle-section {
+            width: calc(33.33% - 5px) !important;
+        }
+        
+        .system-data {
+            width: 100% !important;
+        }
+        
+        .left-column {
+            width: calc(33.33% - 5px) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: var(--spacing-md) !important;
+        }
+        
+        .right-column {
+            width: calc(66.67% - 5px) !important;
+        }
+        
+        /* === 全新均匀布局设计 === */
+        /* 重置之前的样式 */
+        .layout-container {
+            display: grid !important;
+            grid-template-columns: 1fr 2fr !important; /* 恢复正确的1:2比例 */
+            grid-template-rows: 1fr 1fr !important;
+            gap: 2px 3px !important; /* 纵向2px，横向3px */
+            width: 100% !important;
+            height: calc(100% - 342px) !important;
+            margin-bottom: 4px !important;
+        }
+        
+        /* 左上区域：包含系统运行状态和电网接入状态 */
+        .top-section {
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+            display: flex !important;
+            gap: 3px !important; /* 统一为3px */
+            align-items: flex-start !important;
+            width: 100% !important;
+            height: 100% !important; /* 确保填满高度 */
+            margin-bottom: 0 !important;
+        }
+        
+        /* 左上区域内部：系统运行状态 (稍微减少) */
+        .system-status {
+            flex: 0.6 !important; /* 减少到0.6 */
+            height: 100% !important;
+        }
+        
+        /* === 3. 修改电网接入状态布局和表格样式 === */
+        /* 左上区域内部：电网接入状态 (增加到0.4，让右边沿对齐) */
+        .data-table-container {
+            flex: 0.4 !important;
+            height: 100% !important;
+            width: 100% !important; /* 确保宽度填满 */
+            margin: 0 !important; /* 移除外边距 */
+        }
+        
+        /* 修改电网接入状态指示器为水平布局 */
+        .data-table-container .status-indicator {
+            display: flex !important; /* 改为flex水平布局 */
+            align-items: center !important;
+            gap: 6px !important; /* 图标和文字间距 */
+            padding: 4px 8px !important;
+            font-size: 16px !important; /* 调整字体大小 */
+            white-space: nowrap !important; /* 防止换行 */
+        }
+        
+        /* 确保图标和文字在同一行 */
+        .data-table-container .status-indicator i {
+            margin: 0 !important;
+            display: inline-block !important;
+            font-size: 14px !important; /* 图标稍小一点 */
+        }
+        
+        /* 电网接入状态表格占满区域 */
+        .data-table-container .modern-card-body {
+            padding: 8px !important; /* 减小内边距让表格更大 */
+            margin: 0 !important;
+            width: 100% !important;
+            height: calc(100% - 40px) !important;
+        }
+        
+        .data-table-container .data-table {
+            width: 100% !important;
+            table-layout: fixed !important;
+            height: 100% !important; /* 表格占满容器 */
+        }
+        
+        .data-table-container .data-table td {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            padding: 4px 8px !important; /* 调整单元格内边距 */
+            vertical-align: middle !important;
+        }
+        
+        /* 数值单位离右边缘不超过30px */
+        .data-table-container .data-table td:last-child {
+            text-align: right !important;
+            padding-right: 12px !important; /* 控制右边距不超过30px */
+        }
+        
+        /* 左下：实时运行数据 */
+        .system-data {
+            grid-column: 1 !important;
+            grid-row: 2 !important;
+            height: 100% !important; /* 填满高度 */
+        }
+        
+        /* 右侧：功率曲线图 (跨两行) */
+        .power-curve {
+            grid-column: 2 !important;
+            grid-row: 1 / span 2 !important;
+            height: 100% !important; /* 填满高度 */
+        }
+        
+        /* 移除原有的列式布局 */
+        .left-column,
+        .right-column,
+        .middle-section {
+            display: contents !important;
+        }
+        
+        /* 重置嵌套样式 */
+        .system-status > .modern-card-body {
+            flex: initial !important;
+        }
+        
+        .data-table-container {
+            flex: initial !important;
+            margin: initial !important;
+        }
+        
+        .system-status .data-table-container {
+            background: initial !important;
+            border: initial !important;
+            border-radius: initial !important;
+        }
+        
+        .system-status .data-table-container .modern-card-header {
+            background: initial !important;
+        }
+        
+        /* === 底部图表行布局优化 === */
+        .content-row.bottom-row {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 3px !important; /* 统一为3px */
+            width: 100% !important;
+            height: 342px !important; /* 280px * 1.2 + 6px间距调整 */
+            margin-top: 0 !important;
+        }
+        
+        .content-row.bottom-row > .modern-card {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* 确保所有卡片都有合适的高度 */
+        .modern-card {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        .modern-card-body {
+            flex: 1 !important;
+            overflow: hidden !important;
+        }
+        
+        /* === 修复标题栏对齐问题 === */
+        .system-status .modern-card-header,
+        .data-table-container .modern-card-header,
+        .power-curve .modern-card-header,
+        .system-data .modern-card-header {
+            height: 40px !important; /* 固定高度 */
+            min-height: 40px !important;
+            max-height: 40px !important;
+            padding: 8px var(--spacing-lg) !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* 确保卡片主体高度一致 */
+        .system-status .modern-card-body,
+        .data-table-container .modern-card-body,
+        .power-curve .modern-card-body,
+        .system-data .modern-card-body {
+            height: calc(100% - 40px) !important;
+            min-height: calc(100% - 40px) !important;
+        }
+        
+        /* === 确保系统运行状态与电网接入状态样式完全一致 === */
+        
+        /* 统一两个区域的卡片样式 */
+        .system-status,
+        .data-table-container {
+            background: rgba(26, 26, 26, 0.95) !important;
+            border: 1px solid rgba(64, 64, 64, 0.3) !important;
+            border-radius: 8px !important;
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        /* 统一标题栏样式 */
+        .system-status .modern-card-header,
+        .data-table-container .modern-card-header {
+            padding: 8px var(--spacing-lg) !important;
+            min-height: auto !important;
+            height: auto !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background: transparent !important; /* Ensure headers are transparent */
+            border-bottom: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 8px 8px 0 0 !important;
+        }
+        
+        /* 统一标题文字样式 */
+        .system-status .modern-card-title,
+        .data-table-container .modern-card-title {
+            font-size: 16px !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+        }
+        
+        /* 统一状态指示器样式 */
+        .system-status .status-indicator,
+        .data-table-container .status-indicator {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            border-radius: 4px !important;
+        }
+        
+        /* 统一主体内容区域 */
+        .system-status .modern-card-body,
+        .data-table-container .modern-card-body {
+            flex: 1 !important;
+            /* padding: var(--spacing-lg) !important; */ /* Adjusted below for system-status */
+            overflow: hidden !important;
+            background: transparent !important; /* Ensure card body is transparent */
+        }
+
+        /* === 3. 系统运行状态六个显示块居中显示，字体改小 === */
+        .system-status .modern-card-body {
+            padding: var(--spacing-xs) !important; /* Reduce padding further for items to fit */
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+        }
+
+        .status-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 2px !important; /* Further reduced gap */
+            width: 100% !important; 
+            max-width: 100%; 
+            align-items: center; 
+            justify-items: center; 
+        }
+        
+        .status-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 5px !important; 
+            background: rgba(42, 42, 42, 0.95) !important; 
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 4px !important; 
+            text-align: center !important;
+            width: 85px !important;  /* Fixed width */
+            height: 65px !important; /* Fixed height */
+            box-sizing: border-box !important;
+        }
+        
+        .status-icon {
+            font-size: 20px !important; 
+            margin-bottom: 2px !important;
+            color: var(--text-muted) !important; /* 默认颜色 */
+            transition: all 0.3s ease !important;
+        }
+        
+        /* 激活状态的图标 */
+        .status-icon.online {
+            color: #00e6cc !important; /* 使用青绿色 */
+            text-shadow: 0 0 8px rgba(0, 230, 204, 0.7) !important; /* 添加青绿色发光效果 */
+        }
+        
+        .status-text {
+            font-size: 10.5px !important; /* Further reduced font size */
+            line-height: 1.15 !important; 
+            white-space: normal !important; 
+            word-break: keep-all; 
+            max-width: 100% !important;
+            display: block !important;
+            margin-top: auto; /* Push text down a bit if space */
+            color: var(--text-muted) !important; /* 默认颜色 */
+            transition: all 0.3s ease !important;
+        }
+        
+        /* 被激活的项目同时改变图标和文字样式 */
+        .status-item.active .status-text {
+            color: #00e6cc !important; /* 文字使用青绿色 */
+            font-weight: bold !important; /* 文字加粗 */
+            text-shadow: 0 0 5px rgba(0, 230, 204, 0.5) !important; /* 文字也添加青绿色发光效果 */
+        }
+
+        /* 进一步减少gap，减少空白 */
+        .layout-container {
+            gap: 2px !important; /* 从3px进一步减少到2px */
+        }
+        
+        .top-section {
+            gap: 2px !important; /* 系统运行状态和电网接入状态之间的间距也减少 */
+        }
+        
+        /* 同时调整底部图表的gap保持一致 */
+        .content-row.bottom-row {
+            gap: 2px !important;
+        }
+        
+        /* === 恢复gap，调整电网接入状态内部填充 === */
+        .layout-container {
+            display: grid !important;
+            grid-template-columns: 1fr 2fr !important; /* 恢复正确的1:2比例 */
+            grid-template-rows: 1fr 1fr !important;
+            gap: 2px !important; /* 恢复小间距 */
+            width: 100% !important;
+            height: calc(100% - 342px) !important;
+            margin-bottom: 4px !important;
+        }
+        
+        .top-section {
+            gap: 2px !important;
+        }
+        
+        /* 确保电网接入状态卡片完全填满其容器 */
+        .data-table-container {
+            flex: 0.4 !important;
+            height: 100% !important;
+            width: 100% !important; /* 确保宽度填满 */
+            margin: 0 !important; /* 移除外边距 */
+        }
+        
+        /* 调整电网接入状态内部的填充，让内容填满 */
+        .data-table-container .modern-card-body {
+            padding: var(--spacing-sm) !important; /* 减少内边距 */
+            margin: 0 !important; /* 移除外边距 */
+            width: 100% !important;
+            height: calc(100% - 40px) !important;
+        }
+        
+        /* 确保表格填满容器 */
+        .data-table-container .data-table {
+            width: 100% !important;
+            margin: 0 !important;
+        }
+        
+        /* === 修复系统运行状态标题栏对齐问题 === */
+        
+        /* 强制重置系统运行状态的所有外边距和定位 */
+        .system-status {
+            flex: 0.6 !important;
+            height: 100% !important;
+            width: 100% !important;
+            margin: 0 !important; /* 强制移除所有外边距 */
+            padding: 0 !important; /* 强制移除所有内边距 */
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            border-top: 1px solid rgba(64, 64, 64, 0.4) !important; /* Consistent border */
+            border-image: none !important;
+            /* background: rgba(26, 26, 26, 0.95) !important; */ /* Unified background applied above */
+        }
+        
+        /* 确保系统运行状态标题栏与其他区域完全一致 */
+        .system-status .modern-card-header {
+            padding: 8px var(--spacing-lg) !important;
+            margin: 0 !important; /* 强制移除标题栏外边距 */
+            height: auto !important;
+            min-height: auto !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background: transparent !important; /* Ensure headers are transparent */
+            border-bottom: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 8px 8px 0 0 !important;
+            position: relative !important;
+            top: 0 !important;
+        }
+        
+        /* 调整电网接入状态间隙，与全页面布局保持一致 */
+        .data-table-container .modern-card-body {
+            padding: var(--spacing-lg) !important; /* 与其他区域保持一致的padding */
+            margin: 0 !important;
+            width: 100% !important;
+            height: calc(100% - 40px) !important;
+        }
+        
+        /* 确保左上区域内部对齐 */
+        .top-section {
+            gap: 2px !important;
+            align-items: flex-start !important; /* 强制顶部对齐 */
+            height: 100% !important;
+        }
+        
+        /* 强制所有标题栏在同一基线 */
+        .system-status .modern-card-header,
+        .data-table-container .modern-card-header,
+        .power-curve .modern-card-header {
+            line-height: 1.2 !important;
+            vertical-align: top !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* === 解决间隙可见性问题 === */
+        
+        /* 增加卡片边框对比度，让间隙更明显 */
+        .modern-card {
+            border: 1px solid rgba(64, 64, 64, 0.6) !important; /* 增加边框透明度 */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important; /* 添加阴影增强对比 */
+        }
+        
+        /* 确保gap生效 */
+        .layout-container {
+            gap: 2px 6px !important; /* 增加横向gap到6px */
+        }
+        
+        .top-section {
+            gap: 6px !important; /* 增加到6px */
+        }
+        
+        .content-row.bottom-row {
+            gap: 6px !important; /* 增加到6px */
+        }
+        
+        /* === 调大字体大小 === */
+        
+        /* 调大图表内文字 */
+        .data-table td,
+        .data-table th,
+        .data-table-modern td,
+        .data-table-modern th {
+            font-size: 14px !important; /* 从12px调大到14px */
+        }
+        
+        /* 调大数值显示 */
+        .data-value {
+            font-size: 16px !important; /* 从14px调大到16px */
+            font-weight: 600 !important;
+        }
+        
+        /* 调大单位文字 */
+        .data-unit {
+            font-size: 15px !important; /* 与调整后的字体保持一致 */
+        }
+        
+        /* 调大右上角图例字体 */
+        .chart-legend-modern .legend-text-modern {
+            font-size: 13px !important; /* 从11px调大到13px */
+        }
+        
+        /* 调大状态文字 */
+        .status-text {
+            font-size: 13px !important; /* 从11px调大到13px */
+        }
+        
+        /* 调大标题字体 */
+        .modern-card-title {
+            font-size: 18px !important; /* 从16px调大到18px */
+        }
+        
+        /* 调大控件文字 */
+        .status-indicator,
+        .chart-controls,
+        .data-refresh-indicator,
+        .time-range-indicator {
+            font-size: 16px !important; /* 与'已连接'保持一致 */
+        }
+        
+        /* === 修复具体样式问题 === */
+        
+        /* 移除系统运行状态的彩色背景，与其他区域保持一致 */
+        .system-status .modern-card-header {
+            background: transparent !important; /* 覆盖之前的彩色背景 */
+        }
+        
+        /* 确保电网接入状态的图标和文字正确水平排列 */
+        .data-table-container .status-indicator {
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            padding: 4px 8px !important;
+            font-size: 13px !important;
+        }
+        
+        /* 移除图标的默认边距 */
+        .data-table-container .status-indicator i {
+            margin: 0 !important;
+        }
+        
+        /* === 4. 调整区域高度 - 实时运行数据向上扩展5px === */
+        
+        /* 调整布局容器的行高度分配 */
+        .layout-container {
+            display: grid !important;
+            grid-template-columns: 1fr 2fr !important;
+            grid-template-rows: calc(1fr - 5px) calc(1fr + 5px) !important; /* 上方减5px，下方加5px */
+            gap: 2px 6px !important;
+            width: 100% !important;
+            height: calc(100% - 342px) !important;
+            margin-bottom: 4px !important;
+        }
+        
+        /* 确保上方区域高度减小 */
+        .top-section {
+            gap: 6px !important;
+            align-items: flex-start !important;
+            height: calc(100% - 5px) !important; /* 减小5px */
+        }
+        
+        /* 系统运行状态和电网接入状态都减小高度 */
+        .system-status,
+        .data-table-container {
+            height: calc(100% - 5px) !important; /* 减小5px */
+        }
+        
+        /* 实时运行数据高度增加 */
+        .system-data {
+            height: calc(100% + 5px) !important; /* Original increase */
+            margin-top: -5px !important; /* Original move up */
+        }
+        
+        .system-data .modern-card-body {
+            padding: var(--spacing-xs) var(--spacing-sm) !important; /* Reduced vertical padding */
+            overflow-y: auto !important; /* Ensure scrollability if needed */
+        }
+        
+        /* === 修复实时运行数据位置和字体 === */
+        
+        /* 调大实时运行数据表格字体 */
+        .data-table-modern td {
+            font-size: 16px !important; /* 从14px调大2个字号到16px */
+        }
+        
+        /* === 修复未连接文字位置 === */
+        
+        /* 确保电网接入状态的状态指示器内容正确排列 */
+        .data-table-container .status-indicator {
+            display: inline-flex !important; /* 改为inline-flex确保水平排列 */
+            align-items: center !important;
+            gap: 4px !important; /* 减少间距 */
+            padding: 4px 8px !important;
+            font-size: 13px !important;
+            white-space: nowrap !important; /* 防止换行 */
+        }
+        
+        /* 确保图标和文字在同一行 */
+        .data-table-container .status-indicator i {
+            margin: 0 !important;
+            display: inline-block !important;
+        }
+        
+        /* === 彻底消除系统运行状态的彩色边缘 === */
+        
+        /* 移除所有可能的彩色背景和边框 */
+        .system-status .modern-card-header {
+            background: transparent !important;
+            background-image: none !important;
+            background-color: transparent !important;
+            border-top: none !important;
+            border-image: none !important;
+        }
+        
+        /* 确保卡片本身也没有彩色边框 */
+        .system-status {
+            border-top: 1px solid rgba(64, 64, 64, 0.6) !important;
+            border-image: none !important;
+            background: rgba(26, 26, 26, 0.95) !important;
+        }
+        
+        /* 移除任何可能的渐变边框 */
+        .system-status::before,
+        .system-status .modern-card-header::before {
+            display: none !important;
+        }
+        
+        /* === 统一字体大小调整 === */
+        
+        /* 统一所有表格和图表文字为18px */
+        .data-table td,
+        .data-table th,
+        .data-table-modern td,
+        .modern-card-title,
+        .status-text,
+        .chart-legend-modern .legend-text-modern {
+            font-size: 18px !important;
+        }
+        
+        /* 数字统一为20px */
+        .data-value {
+            font-size: 20px !important;
+            font-weight: 600 !important;
+        }
+        
+        /* 符号（单位）统一为18px */
+        .data-unit {
+            font-size: 18px !important;
+        }
+        
+        /* 控件文字18px */
+        .status-indicator,
+        .chart-controls,
+        .data-refresh-indicator,
+        .time-range-indicator {
+            font-size: 18px !important;
+        }
+        
+        /* === 电网接入状态不换行显示 === */
+        
+        /* 减小电网接入状态的内边距 */
+        .data-table-container .modern-card-body {
+            padding: var(--spacing-sm) !important; /* 使用更小的间距 */
+        }
+        
+        /* 电网接入状态表格不换行 */
+        .data-table-container .data-table {
+            width: 100% !important;
+            table-layout: fixed !important;
+        }
+        
+        .data-table-container .data-table td {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            padding: 2px 4px !important; /* 减小单元格内边距 */
+        }
+        
+        /* 确保状态指示器不换行 */
+        .data-table-container .status-indicator {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            font-size: 16px !important; /* 稍微减小以适应空间 */
+        }
+
+        /* 统一所有区域的背景颜色 */
+        .system-status,
+        .data-table-container,
+        .power-curve,
+        .system-data {
+            background: rgba(42, 42, 42, 0.95) !important; /* 与下方图表保持一致 */
+            border: 1px solid rgba(64, 64, 64, 0.3) !important;
+            border-radius: 8px !important;
+        }
+        
+        /* 强制应用到所有modern-card */
+        .modern-card {
+            background: rgba(42, 42, 42, 0.95) !important;
+            border: 1px solid rgba(64, 64, 64, 0.3) !important;
+        }
+
+        .system-status .modern-card-body {
+            flex: 1 !important;
+            padding: var(--spacing-sm) !important; /* Reduce padding to allow more space for items */
+            overflow: hidden !important;
+            background: transparent !important; /* Ensure card body is transparent */
+            display: flex;
+            align-items: center; /* Center grid vertically */
+            justify-content: center; /* Center grid horizontally */
+        }
+
+        .status-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: var(--spacing-sm) !important; /* Reduced gap */
+            width: 100%; /* Allow grid to take full width */
+            max-width: 95%; /* Prevent items from touching edges if too wide */
+        }
+        
+        .status-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: var(--spacing-xs) !important; /* Reduced padding */
+            background: rgba(42, 42, 42, 0.95) !important; /* Unified background */
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: var(--radius-md) !important;
+            text-align: center;
+            aspect-ratio: 1 / 0.8; /* Adjust aspect ratio for better fit */
+            min-height: 0; /* Allow shrinking */
+        }
+        
+        .status-icon {
+            font-size: 20px !important; /* Slightly smaller icon */
+            margin-bottom: var(--spacing-xs) !important;
+        }
+        
+        .status-text {
+            font-size: 11.5px !important; /* Adjusted font size to prevent wrapping */
+            line-height: 1.2 !important;
+            white-space: normal; /* Allow wrapping if absolutely necessary but try to avoid */
+            max-width: 100%;
+        }
+
+        /* === 6. 增大底部三个图表右上角标签字体 === */
+        .bottom-row .chart-time-indicator {
+            font-size: 18px !important; /* 12px * 1.5 = 18px */
+        }
+
+        /* === 6. 增大底部三个图表右上角标签字体 === */
+        .content-row.bottom-row .chart-card .chart-time-indicator {
+            font-size: 18px !important; /* 12px * 1.5 = 18px */
+        }
+
+        /* === 2. 系统运行状态六个图标调整为布满区域 === */
+        .system-status .modern-card-body {
+            padding: 8px !important; /* 减小内边距让图标区域更大 */
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important; 
+        }
+
+        .status-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 8px !important; /* 适中的间距 */
+            width: 100% !important; 
+            height: 100% !important; /* 填满高度 */
+            max-width: 100%; 
+        }
+        
+        .status-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 8px 4px !important; /* 增加内边距 */
+            background: rgba(42, 42, 42, 0.95) !important; 
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 6px !important; 
+            text-align: center !important;
+            width: 100% !important;  /* 填满宽度 */
+            height: 100% !important; /* 填满高度 */
+            box-sizing: border-box !important;
+            min-height: 80px !important; /* 确保最小高度 */
+        }
+        
+        .status-icon {
+            font-size: 28px !important; /* 增大图标 */
+            margin-bottom: 6px !important; 
+        }
+        
+        .status-text {
+            font-size: 13px !important; /* 增大字体 */
+            line-height: 1.2 !important; 
+            white-space: normal !important; 
+            word-break: keep-all; 
+            max-width: 100% !important;
+            display: block !important;
+        }
+
+        /* === 3. 电网接入状态字体和标签宽度调整 === */
+        .data-table-container .data-table td {
+            font-size: 17px !important; /* 18px减小1号到17px */
+            padding: 4px 6px !important;
+        }
+
+        .data-table-container .data-table td:first-child {
+            width: 55% !important; /* 增加标签宽度确保"上下网功率"完全显示 */
+            white-space: nowrap !important;
+        }
+
+        .data-table-container .data-table td:last-child {
+            width: 45% !important;
+            text-align: right !important;
+            padding-right: 10px !important;
+        }
+
+        /* === 4. 实时运行数据表格调整 === */
+        .system-data .modern-card-body {
+            padding: 6px 8px !important; /* 进一步减小垂直内边距 */
+            height: calc(100% - 39px) !important; /* 减小1px高度 */
+            overflow-y: auto !important;
+        }
+
+        .data-table-modern td {
+            font-size: 15px !important; /* 16px减小1号到15px */
+            padding: 3px 6px !important; /* 减小表格单元格内边距 */
+        }
+
+        /* '实时更新'和类似区域字体调整为与'已连接'相同 */
+        .data-refresh-indicator,
+        .time-range-indicator,
+        .chart-controls,
+        .status-indicator {
+            font-size: 16px !important; /* 与'已连接'保持一致 */
+        }
+
+        /* === 5. 底部三个图表右上角标签字体调大1号 === */
+        .content-row.bottom-row .chart-card .chart-time-indicator {
+            font-size: 19px !important; /* 18px增大1号到19px */
+        }
+
+        /* 确保所有区域边框一致 */
+        .modern-card, .card, .content-card {
+            border: 1px solid rgba(64, 64, 64, 0.3) !important;
+            border-radius: 8px !important;
+        }
+
+        /* 移除任何可能的渐变或不一致的背景 */
+        .page-content::before,
+        .main-content::before,
+        #app::before {
+            display: none !important;
+        }
+
+        /* === 1. 系统运行状态六个显示块的宽度减小20%，字体增大一号 === */
+        .status-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 8px 4px !important; /* 增加内边距 */
+            background: rgba(42, 42, 42, 0.95) !important; 
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 6px !important; 
+            text-align: center !important;
+            width: 80% !important;  /* 从100%减小到80%，减小20% */
+            height: 100% !important; /* 填满高度 */
+            box-sizing: border-box !important;
+            min-height: 80px !important; /* 确保最小高度 */
+            margin: 0 auto !important; /* 居中显示以保证左右边距相同 */
+        }
+        
+        .status-text {
+            font-size: 14px !important; /* 从13px增大1号到14px */
+            line-height: 1.2 !important; 
+            white-space: normal !important; 
+            word-break: keep-all; 
+            max-width: 100% !important;
+            display: block !important;
+        }
+
+        /* === 3. 实时功率监控图表右上角标签文字字体减少1号 === */
+        .power-curve .time-range-indicator {
+            font-size: 17px !important; /* 从18px减少1号到17px */
+        }
+
+        /* === 4. 底部三个图表向上移动2px，减小标题栏高度，缩小右侧时间文字 === */
+        .content-row.bottom-row {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 2px !important; /* 统一为2px */
+            width: 100% !important;
+            height: 342px !important; /* 280px * 1.2 + 6px间距调整 */
+            margin-top: -2px !important; /* 继续向上移动2px */
+        }
+
+        /* 减小底部图表标题栏高度 */
+        .content-row.bottom-row .modern-card-header {
+            height: 32px !important; /* 从40px减小到32px，与文字高度相近 */
+            min-height: 32px !important;
+            max-height: 32px !important;
+            padding: 6px var(--spacing-lg) !important; /* 减小垂直内边距 */
+        }
+
+        /* 底部图表卡片主体相应调整高度 */
+        .content-row.bottom-row .modern-card-body {
+            height: calc(100% - 32px) !important; /* 对应标题栏高度调整 */
+            min-height: calc(100% - 32px) !important;
+        }
+
+        /* 缩小底部图表右侧时间文字字体 */
+        .content-row.bottom-row .chart-card .chart-time-indicator {
+            font-size: 15px !important; /* 从19px缩小2个字号到15px */
+        }
+
+        /* === 1. 系统运行状态六个显示块修正 - 确保完整显示 === */
+        .status-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 6px !important; /* 增加gap确保完整显示 */
+            width: 100% !important; 
+            max-width: 100%; 
+            align-items: center; 
+            justify-items: center; 
+        }
+        
+        .status-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 6px 2px !important; /* 减小水平内边距 */
+            background: rgba(42, 42, 42, 0.95) !important; 
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 6px !important; 
+            text-align: center !important;
+            width: 90% !important;  /* 从80%增加到90%，确保内容完整显示 */
+            height: 100% !important; 
+            box-sizing: border-box !important;
+            min-height: 75px !important; 
+            margin: 0 auto !important; 
+        }
+        
+        .status-text {
+            font-size: 12px !important; /* 适当调整字体大小确保完整显示 */
+            line-height: 1.1 !important; 
+            white-space: nowrap !important; /* 防止换行 */
+            word-break: keep-all; 
+            max-width: 100% !important;
+            display: block !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        /* === 3. 实时功率监控图表右上方图例字体减少1号 === */
+        .chart-legend-modern .legend-text-modern {
+            font-size: 14px !important; /* 从12px恢复到14px，保证可读性 */
+        }
+
+        /* === 4. 底部三个图表修正 - 只调整上下gap === */
+        .layout-container {
+            display: grid !important;
+            grid-template-columns: 1fr 2fr !important;
+            grid-template-rows: calc(1fr - 5px) calc(1fr + 5px) !important; 
+            gap: 2px 6px !important; /* 保持原有的横向gap 6px */
+            width: 100% !important;
+            height: calc(100% - 342px) !important;
+            margin-bottom: 2px !important; /* 从4px减小到2px，进一步减小上下gap */
+        }
+        
+        .content-row.bottom-row {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 6px !important; /* 恢复横向gap为6px，保持一致 */
+            width: 100% !important;
+            height: 342px !important; 
+            margin-top: -4px !important; /* 增加向上移动距离，进一步减小上下gap */
+        }
+
+        /* === 1. 系统运行状态六个显示块修正 - 缩减长宽，保持图标，增大文字 === */
+        .status-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 4px !important; /* 减小gap为显示块腾出空间 */
+            width: 100% !important; 
+            max-width: 100%; 
+            align-items: center; 
+            justify-items: center; 
+        }
+        
+        .status-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 6px 4px !important; /* 减小内边距 */
+            background: rgba(42, 42, 42, 0.95) !important; 
+            border: 6px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 8px !important; 
+            text-align: center !important;
+            width: 90px !important;  /* 固定较小的宽度 */
+            height: 90px !important; /* 固定较小的高度 */
+            box-sizing: border-box !important;
+            margin: 0 auto !important; 
+        }
+        
+        .status-icon {
+            font-size: 20px !important; /* 保持图标尺寸不变 */
+            margin-bottom: 4px !important; 
+        }
+        
+        .status-text {
+            font-size: 16px !important; /* 从12px变大2号到16px */
+            line-height: 1.0 !important; 
+            white-space: nowrap !important; 
+            word-break: keep-all; 
+            max-width: 100% !important;
+            display: block !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        /* === 统一配色覆盖 === */
+        /* 确保所有页面和导航区域使用页面背景色 */
+        .page-content, .main-content, .navbar, .main-nav {
+            background: var(--page-bg) !important;
+        }
+        
+        /* 确保所有数据分析和报表页面使用统一配色 */
+        .data-analysis-container, .report-analysis-container,
+        .data-analysis-controls, .report-analysis-controls,
+        .chart-container, .table-container {
+            background-color: var(--content-bg) !important;
+        }
+        
+        /* === 导航栏样式 === */
+
+        /* === 缩减页面整体间距50% === */
+        /* 能量管理页面间距缩减 */
+        .page-content {
+            padding: 0px 2px 2px 2px !important; /* 从0px 5px 5px 5px缩减50% */
+        }
+
+        .main-container {
+            gap: 2px !important; /* 从5px缩减到2px */
+        }
+
+        .layout-container {
+            gap: 1px 3px !important; /* 从2px 6px缩减50% */
+            margin-bottom: 2px !important; /* 从4px缩减50% */
+        }
+
+        .top-section {
+            gap: 3px !important; /* 从6px缩减50% */
+        }
+
+        .content-row.bottom-row {
+            gap: 3px !important; /* 从6px缩减50% */
+            margin-top: -2px !important; /* 保持向上移动 */
+        }
+
+        /* 导航栏和头部间距缩减 */
+        .header, .navbar {
+            padding: 0 10px !important; /* 从0 20px缩减50% */
+        }
+
+        /* 卡片内部间距缩减 */
+        .modern-card-header {
+            padding: 4px 8px !important; /* 统一缩减50% */
+        }
+
+        .modern-card-body {
+            padding: 4px !important; /* 统一缩减50% */
+        }
+
+        .system-status .modern-card-body {
+            padding: 2px !important; /* 进一步缩减 */
+        }
+
+        .data-table-container .modern-card-body {
+            padding: 2px !important; /* 进一步缩减 */
+        }
+
+        .system-data .modern-card-body {
+            padding: 2px 4px !important; /* 缩减垂直间距 */
+        }
+
+        /* 扩大图表区域 */
+        .chart, #powerCurveChart, #powerGenerationChart, #hydrogenProductionChart, #utilizationChart {
+            min-height: 280px !important; /* 从250px增大 */
+        }
+
+        /* 状态网格间距优化 */
+        .status-grid {
+            gap: 2px !important; /* 从4px缩减50% */
+        }
+
+        .status-statistics-grid {
+            gap: 4px !important; /* 从8px缩减50% */
+        }
+
+        /* === 报表分析页面样式修复 === */
+        /* 与整体项目UI风格保持一致的报表分析页面样式 */
+        
+        /* 报表分析容器背景 */
+        .report-analysis-container {
+            background-color: var(--page-bg) !important;
+            padding: 10px 20px !important;
+            min-height: calc(100vh - 120px) !important;
+        }
+
+        /* 报表分析控制区域 */
+        .report-analysis-controls {
+            margin-top: 0 !important;
+            padding: 10px !important;
+            background-color: var(--content-bg) !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(64, 64, 64, 0.3) !important;
+            margin-bottom: 10px !important;
+        }
+
+        /* 报表分析按钮样式 - 与其他页面按钮保持一致 */
+        .action-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            padding: 8px 15px !important;
+            border: none !important;
+            border-radius: 6px !important;
+            font-family: inherit !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+            white-space: nowrap !important;
+        }
+
+        /* 加载按钮 */
+        .load-btn {
+            background-color: #1890ff !important;
+            color: white !important;
+        }
+
+        .load-btn:hover:not(:disabled) {
+            background-color: #40a9ff !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3) !important;
+        }
+
+        .load-btn:disabled {
+            background-color: #434343 !important;
+            color: #8c8c8c !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* 导出按钮 */
+        .export-btn {
+            background-color: #52c41a !important;
+            color: white !important;
+        }
+
+        .export-btn:hover:not(:disabled) {
+            background-color: #73d13d !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(82, 196, 26, 0.3) !important;
+        }
+
+        .export-btn:disabled {
+            background-color: #434343 !important;
+            color: #8c8c8c !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* 清除按钮 */
+        .action-btn[style*="#f56c6c"] {
+            background-color: #ff4d4f !important;
+            color: white !important;
+        }
+
+        .action-btn[style*="#f56c6c"]:hover:not(:disabled) {
+            background-color: #ff7875 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(255, 77, 79, 0.3) !important;
+        }
+
+        .action-btn[style*="#f56c6c"]:disabled {
+            background-color: #434343 !important;
+            color: #8c8c8c !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* 报表分析内容区域 */
+        .report-analysis-content {
+            margin-top: 10px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            height: calc(100vh - 200px) !important;
+        }
+
+        /* 报表分析表格容器 - 与其他页面表格样式一致 */
+        .report-analysis-content .table-container {
+            position: relative !important;
+            max-height: calc(100vh - 200px) !important;
+            overflow: auto !important;
+            border: 1px solid rgba(64, 64, 64, 0.3) !important;
+            border-radius: 8px !important;
+            background-color: var(--content-bg) !important;
+            flex: 1 !important;
+        }
+
+        /* 报表表格样式 - 与其他页面表格保持一致 */
+        .report-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            background-color: var(--content-bg) !important;
+            margin: 0 !important;
+        }
+
+        .report-table th {
+            background-color: var(--content-bg) !important;
+            padding: 12px 16px !important;
+            text-align: left !important;
+            font-weight: 600 !important;
+            color: var(--text-primary) !important;
+            font-size: 14px !important;
+            border-bottom: 1px solid rgba(64, 64, 64, 0.4) !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 10 !important;
+        }
+
+        .report-table td {
+            padding: 8px 16px !important;
+            border-bottom: 1px solid rgba(64, 64, 64, 0.2) !important;
+            color: var(--text-secondary) !important;
+            font-size: 13px !important;
+            line-height: 1.4 !important;
+        }
+
+        .report-table tr:hover {
+            background-color: rgba(58, 58, 58, 0.8) !important;
+        }
+
+        .report-table tr:hover td {
+            background-color: rgba(58, 58, 58, 0.8) !important;
+        }
+
+        .report-table tr:nth-child(even) {
+            background-color: rgba(42, 42, 42, 0.98) !important;
+        }
+
+        /* 报表分析页面无数据消息 */
+        .no-data-message-center {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 200px !important;
+            color: var(--text-secondary) !important;
+            font-size: 16px !important;
+            text-align: center !important;
+        }
+
+        /* 报表分析页面加载状态 */
+        .report-analysis-footer {
+            margin-top: 10px !important;
+            text-align: center !important;
+            padding: 20px !important;
+        }
+
+        .report-analysis-footer .loading-indicator {
+            color: var(--text-secondary) !important;
+            font-size: 14px !important;
+        }
+
+        /* 报表分析控制组样式 */
+        .report-analysis-controls .control-group {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+        }
+
+        .report-analysis-controls .control-group label {
+            color: var(--text-primary) !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            margin-bottom: 4px !important;
+        }
+
+        .report-analysis-controls select {
+            padding: 8px !important;
+            background-color: rgba(58, 58, 58, 0.8) !important;
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 4px !important;
+            color: var(--text-primary) !important;
+            font-size: 13px !important;
+        }
+
+        .report-analysis-controls input[type="datetime-local"] {
+            padding: 8px !important;
+            background-color: rgba(58, 58, 58, 0.8) !important;
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 4px !important;
+            color: var(--text-primary) !important;
+            font-size: 13px !important;
+        }
+
+        /* Vue Multiselect在报表分析页面的样式适配 */
+        .report-analysis-controls .multiselect {
+            background-color: rgba(58, 58, 58, 0.8) !important;
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 4px !important;
+        }
+
+        .report-analysis-controls .multiselect__tags {
+            background-color: rgba(58, 58, 58, 0.8) !important;
+            border: none !important;
+            color: var(--text-primary) !important;
+        }
+
+        .report-analysis-controls .multiselect__single {
+            background-color: transparent !important;
+            color: var(--text-primary) !important;
+        }
+
+        .report-analysis-controls .multiselect__content-wrapper {
+            background-color: var(--content-bg) !important;
+            border: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 4px !important;
+        }
+
+        .report-analysis-controls .multiselect__option {
+            background-color: var(--content-bg) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .report-analysis-controls .multiselect__option--highlight {
+            background-color: rgba(58, 58, 58, 0.8) !important;
+        }
+
+        /* 确保报表分析页面按钮图标正确显示 */
+        .action-btn i {
+            margin-right: 4px !important;
+            font-size: 14px !important;
+        }
+
+        /* === 能量管理页面美化修复 === */
+
+        /* 1. 移除状态指示器的黑底背景，标题靠左对齐 */
+        .system-status .status-indicator,
+        .data-table-container .status-indicator {
+            padding: 4px 8px !important;
+            font-size: 16px !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            border-radius: 0 !important; /* 移除圆角 */
+            background: transparent !important; /* 移除背景色 */
+            border: none !important; /* 移除边框 */
+            color: var(--text-primary) !important; /* 使用主要文字颜色 */
+        }
+
+        /* 确保状态指示器在线状态显示绿色，增强对比度 */
+        .status-indicator.status-online {
+            color: #00ff00 !important; /* 使用更亮的绿色 */
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.7) !important; /* 添加发光效果 */
+            font-weight: bold !important; /* 加粗文字 */
+            transition: all 0.3s ease; /* 添加过渡效果 */
+        }
+
+        /* 确保状态指示器离线状态显示红色 */
+        .status-indicator.status-offline {
+            color: var(--error) !important;
+        }
+
+        /* 标题栏整体左对齐，移除右侧空白 */
+        .system-status .modern-card-header,
+        .data-table-container .modern-card-header {
+            padding: 8px var(--spacing-lg) !important;
+            min-height: auto !important;
+            height: auto !important;
+            display: flex !important;
+            justify-content: space-between !important; /* 改回space-between，让状态指示器靠右 */
+            align-items: center !important;
+            gap: 12px !important; /* 标题和状态指示器之间的间距 */
+            background: transparent !important;
+            border-bottom: 1px solid rgba(64, 64, 64, 0.4) !important;
+            border-radius: 8px 8px 0 0 !important;
+        }
+
+        /* 确保标题文字靠左显示 */
+        .system-status .modern-card-title,
+        .data-table-container .modern-card-title {
+            font-size: 18px !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+            flex: 0 0 auto !important; /* 不拉伸 */
+        }
+
+        /* 2. 底部三个图表图标全部改为绿色 */
+        .content-row.bottom-row .modern-card-header .modern-card-title i {
+            color: var(--success) !important; /* 统一使用绿色 */
+        }
+
+        /* 3. 时间指示器图标和文字改为绿色 */
+        .time-range-indicator,
+        .chart-time-indicator {
+            color: var(--success) !important; /* 文字改为绿色 */
+        }
+
+        .time-range-indicator i,
+        .chart-time-indicator i {
+            color: var(--success) !important; /* 图标改为绿色 */
+        }
+
+        /* 确保实时功率监控的时间指示器也是绿色 */
+        .power-curve .time-range-indicator,
+        .power-curve .time-range-indicator i {
+            color: var(--success) !important;
+        }
+
+        /* 确保报表分析页面按钮图标正确显示 */
+        .action-btn i {
+            margin-right: 4px !important;
+            font-size: 14px !important;
+        }
+
+        /* === 首页样式调整 === */
+        .hydrogen-home-page {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* Matrix数字雨背景 */
+        #matrix-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+        }
+
+        /* 主内容区域 */
+        .home-content {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px 40px 20px 40px; /* 减少顶部padding，增加底部padding */
+            box-sizing: border-box;
+        }
+
+        /* 顶部标题区域 */
+        .home-header {
+            text-align: center;
+            flex-shrink: 0; /* 防止标题被压缩 */
+        }
+
+        .main-title-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 0;
+            position: relative;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .title-text {
+            position: relative;
+            z-index: 3;
+            background: linear-gradient(45deg, #00ff88, #00aaff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            /* 移除闪烁动画 */
+            animation: none;
+        }
+
+        /* 移除Glitch效果 - 隐藏闪烁元素 */
+        .title-glitch,
+        .title-glitch-2 {
+            display: none; /* 直接隐藏闪烁元素 */
+        }
+
+        /* 移除所有闪烁动画 */
+        @keyframes glitch-1 { /* 保留但不使用 */ }
+        @keyframes glitch-2 { /* 保留但不使用 */ }
+
+        @keyframes gradient-shift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #888;
+            margin-top: 10px;
+            letter-spacing: 1px;
+            animation: fade-in 2s ease-out;
+        }
+
+        /* 中央核心展示区 - 往上移动一个电网功率框的高度 */
+        .core-display {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px; /* 确保最小高度 */
+            transform: translateY(-120px); /* 往上移动一个电网功率框的高度 */
+        }
+
+        /* 氢分子动画 */
+        .hydrogen-molecule {
+            position: absolute;
+            width: 180px; /* 稍微减小分子大小 */
+            height: 180px;
+            z-index: 20;
+        }
+
+        .molecule-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            animation: molecule-rotate 20s linear infinite;
+        }
+
+        .atom {
+            position: absolute;
+            width: 50px; /* 减小原子大小 */
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #00ff88, #00aa66);
+            box-shadow: 0 0 30px #00ff88, inset 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .atom-1 {
+            top: 50%;
+            left: 20%;
+            transform: translate(-50%, -50%);
+        }
+
+        .atom-2 {
+            top: 50%;
+            right: 20%;
+            transform: translate(50%, -50%);
+        }
+
+        .bond {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px; /* 减小化学键大小 */
+            height: 4px;
+            background: linear-gradient(90deg, #00ff88, #00aaff, #00ff88);
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px #00aaff;
+        }
+
+        .electron {
+            position: absolute;
+            width: 6px; /* 减小电子大小 */
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #fff;
+        }
+
+        .electron-1 {
+            animation: electron-orbit-1 2s linear infinite;
+        }
+
+        .electron-2 {
+            animation: electron-orbit-2 2.5s linear infinite;
+        }
+
+        .electron-3 {
+            animation: electron-orbit-3 3s linear infinite;
+        }
+
+        .electron-4 {
+            animation: electron-orbit-4 3.5s linear infinite;
+        }
+
+        @keyframes molecule-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes electron-orbit-1 {
+            from {
+                transform: rotate(0deg) translateX(70px) rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg) translateX(70px) rotate(-360deg);
+            }
+        }
+
+        @keyframes electron-orbit-2 {
+            from {
+                transform: rotate(90deg) translateX(80px) rotate(-90deg);
+            }
+            to {
+                transform: rotate(450deg) translateX(80px) rotate(-450deg);
+            }
+        }
+
+        @keyframes electron-orbit-3 {
+            from {
+                transform: rotate(180deg) translateX(90px) rotate(-180deg);
+            }
+            to {
+                transform: rotate(540deg) translateX(90px) rotate(-540deg);
+            }
+        }
+
+        @keyframes electron-orbit-4 {
+            from {
+                transform: rotate(270deg) translateX(100px) rotate(-270deg);
+            }
+            to {
+                transform: rotate(630deg) translateX(100px) rotate(-630deg);
+            }
+        }
+
+        /* 实时数据环 */
+        .data-ring {
+            position: relative;
+            width: 600px; /* 增大数据环大小以容纳更大的显示框 */
+            height: 600px;
+        }
+
+        .ring-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 2;
+        }
+
+        .ring-progress {
+            fill: none;
+            stroke: url(#ring-gradient);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 1130;
+            stroke-dashoffset: 0;
+            animation: ring-rotate 3s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.5));
+        }
+
+        @keyframes ring-rotate {
+            from {
+                stroke-dashoffset: 1130;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .ring-data {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+
+        .data-item {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateX(240px) rotate(calc(-1 * var(--angle))); /* 增大半径 */
+            text-align: center;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 14px 10px; /* 增大padding */
+            min-width: 120px; /* 增大最小宽度 */
+            max-width: 140px; /* 增大最大宽度 */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .data-item:hover {
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateX(250px) rotate(calc(-1 * var(--angle))) scale(1.05); /* 增大悬停效果 */
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .data-icon {
+            font-size: 24px; /* 增大图标大小 */
+            color: #00ff88;
+            margin-bottom: 6px; /* 增加间距 */
+        }
+
+        .data-label {
+            font-size: 12px; /* 保持标签字体 */
+            color: #aaa;
+            margin-bottom: 8px; /* 增加间距 */
+            line-height: 1.2;
+            word-break: keep-all;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .data-value {
+            font-size: 18px; /* 增大数值字体 */
+            font-weight: bold;
+            color: #fff;
+            line-height: 1.2;
+            word-break: break-all; /* 允许数字换行 */
+            margin-bottom: 4px; /* 数值和单位之间的间距 */
+        }
+
+        .data-value .unit {
+            font-size: 14px; /* 增大单位字体 */
+            color: #00ff88;
+            margin-left: 0; /* 移除左边距 */
+            display: block; /* 单位独占一行 */
+            margin-top: 2px; /* 增加顶部间距 */
+        }
+
+        /* 底部信息展示 - 往上移动一个电网功率框的高度 */
+        .home-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* 减小间距 */
+            flex-shrink: 0; /* 防止底部被压缩 */
+            margin-top: auto; /* 推到底部 */
+            transform: translateY(-120px); /* 往上移动一个电网功率框的高度 */
+        }
+
+        .info-cards {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* 减小卡片间距 */
+            flex-wrap: wrap; /* 允许换行 */
+        }
+
+        /* 数据点新样式 - 分离图标、文字和数值 */
+        .point-top-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            gap: 15px; /* 增加间距使图标和文字更加对称 */
+            width: 100%; /* 确保宽度占满卡片 */
+        }
+        
+        .point-bottom-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes borderBlink {
+            0% { border-color: #00ff88; box-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+            50% { border-color: rgba(0, 255, 136, 0.3); box-shadow: 0 0 5px rgba(0, 255, 136, 0.2); }
+            100% { border-color: #00ff88; box-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+        }
+        
+        .data-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #ffd700;
+            border-radius: 6px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            animation: borderBlink 3s infinite;
+        }
+        
+        /* 为每个数据点添加不同的动画延迟 */
+        .data-item:nth-child(1) { animation-delay: 0s; }
+        .data-item:nth-child(2) { animation-delay: 0.5s; }
+        .data-item:nth-child(3) { animation-delay: 1s; }
+        .data-item:nth-child(4) { animation-delay: 1.5s; }
+        .data-item:nth-child(5) { animation-delay: 2s; }
+        .data-item:nth-child(6) { animation-delay: 2.5s; }
+        
+        .data-icon {
+            margin-right: 5px;
+        }
+        
+        .data-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ffaa;
+            margin-bottom: 2px;
+        }
+        
+        .data-unit {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* 底部信息卡片新样式 - 极简风格 (修改为数据点样式) */
+        .info-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #00ff88; /* 边框颜色为青绿色，加粗边框 */
+            border-radius: 6px;
+            padding: 12px 15px; /* 增加内边距 */
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); /* 阴影颜色为青绿色 */
+            animation: borderBlink 3s infinite; /* 保持闪烁动画 */
+            min-width: 220px;
+            flex: 1 1 calc(25% - 15px);
+            max-width: 280px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        /* 为每个信息卡片添加不同的动画延迟 */
+        .info-card:nth-child(1) { animation-delay: 0s; }
+        .info-card:nth-child(2) { animation-delay: 0.5s; }
+        .info-card:nth-child(3) { animation-delay: 1s; }
+        .info-card:nth-child(4) { animation-delay: 1.5s; }
+
+        .info-card:hover {
+            transform: translateY(-3px); /* 减小悬停效果 */
+            border-color: #00ff88;
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.25);
+        }
+
+        .card-icon {
+            font-size: 24px; /* 增大图标大小 */
+            color: #00ff88; /* 图标颜色改回青绿色 */
+            margin-bottom: 0; /* 移除底部间距 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(1.3); /* 放大SVG图标 */
+        }
+
+        .card-title {
+            font-size: 28px; /* 保持字体大小 */
+            color: #aaaaaa !important; /* 文字颜色改为灰色 */
+            margin-bottom: 8px; /* 保持间距 */
+            line-height: 1.1;
+            word-break: keep-all;
+            white-space: normal; /* 允许换行 */
+            overflow: visible; /* 允许内容溢出 */
+            text-overflow: clip; /* 移除省略号 */
+            font-family: "Microsoft YaHei", Arial, sans-serif; /* 与系统标题字体一致 */
+            font-weight: 600; /* 加粗 */
+            text-shadow: none; /* 移除文字阴影 */
+            letter-spacing: 1px; /* 增加字间距 */
+        }
+
+        .card-value { /* 新增：用于显示数值 */
+            font-size: 18px; /* 增大数值字体 */
+            font-weight: bold;
+            color: #fff;
+            line-height: 1.2;
+            word-break: break-all; /* 允许数字换行 */
+            margin-bottom: 4px; /* 数值和单位之间的间距 */
+        }
+
+        .card-unit { /* 新增：用于显示单位 */
+            font-size: 14px; /* 增大单位字体 */
+            color: #00ff88;
+            margin-left: 0; /* 移除左边距 */
+            display: block; /* 单位独占一行 */
+            margin-top: 2px; /* 增加顶部间距 */
+        }
+
+        .system-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px; /* 减小间距 */
+            padding: 15px 20px; /* 减小内边距 */
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
+            flex-wrap: wrap; /* 允许换行 */
+        }
+
+        .stat-item {
+            text-align: center;
+            min-width: 100px; /* 设置最小宽度 */
+        }
+
+        .stat-value {
+            font-size: 28px; /* 减小数值字体 */
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+            line-height: 1.1;
+            word-break: break-all; /* 允许长数值换行 */
+        }
+
+        .stat-label {
+            font-size: 12px; /* 减小标签字体 */
+            color: #888;
+            margin-top: 4px;
+            line-height: 1.2;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1400px) {
+            .data-ring {
+                width: 550px;
+                height: 550px;
+            }
+            
+            .data-item {
+                transform: translate(-50%, -50%) rotate(var(--angle)) translateX(220px) rotate(calc(-1 * var(--angle)));
+                min-width: 110px;
+                max-width: 130px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .home-content {
+                padding: 20px 30px 15px 30px;
+            }
+            
+            .main-title {
+                font-size: 42px;
+            }
+            
+            .info-card {
+                min-width: 200px;
+                flex: 1 1 calc(50% - 15px);
+            }
+            
+            .system-stats {
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .home-content {
+                padding: 15px 20px 10px 20px;
+            }
+            
+            .main-title {
+                font-size: 32px;
+            }
+            
+            .info-card {
+                flex: 1 1 100%;
+                max-width: none;
+            }
+            
+            .data-ring {
+                width: 450px;
+                height: 450px;
+            }
+            
+            .data-item {
+                transform: translate(-50%, -50%) rotate(var(--angle)) translateX(180px) rotate(calc(-1 * var(--angle)));
+                min-width: 100px;
+                max-width: 120px;
+                padding: 10px 8px;
+            }
+        }
+    </style>
+
+    <!-- 引入Vue、Element UI和Socket.io -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.5.1/dist/socket.io.min.js"></script>
+    <!-- 引入Vue Multiselect组件 -->
+    <script src="https://unpkg.com/vue-multiselect@2.1.6/dist/vue-multiselect.min.js"></script>
+
+    <!-- 引入ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+
+    <!-- 引入日期格式化工具 -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js"></script>
+</head>
+<body>
+    <div id="app" class="dashboard-container">
+        <!-- 顶部导航栏 -->
+        <header class="navbar">
+            <div class="navbar-brand">智慧绿氢管理系统</div>
+            <div class="header-datetime">
+                <div v-if="simulationSpeed > 1" class="simulation-time">
+                    <span class="sim-time">{{ simulationTime }}</span>
+                    <span class="sim-speed">({{ simulationSpeed }}x)</span>
+                </div>
+                {{ currentTime }}
+            </div>
+            <div class="header-user">
+                <!-- 用户信息 -->
+            </div>
+        </header>
+
+        <!-- 主导航菜单 -->
+        <div class="main-nav">
+            <el-menu mode="horizontal" :default-active="currentPage.toString()">
+                <el-menu-item index="1" @click="switchPage(1)">首页</el-menu-item>
+                <el-menu-item index="2" @click="switchPage(2)">能量管理</el-menu-item>
+                <el-menu-item index="3" @click="switchPage(3)">制氢系统</el-menu-item>
+                <el-menu-item index="4" @click="switchPage(4)">系统管理</el-menu-item>
+                <el-menu-item index="5" @click="switchPage(5)">数据分析</el-menu-item>
+                <el-menu-item index="6" @click="switchPage(6)">报表分析</el-menu-item>
+            </el-menu>
+        </div>
+
+        <!-- 主体内容区 -->
+        <div class="main-content">
+            <!-- 首页内容（空白页） -->
+            <div v-show="currentPage === 1">
+                <div class="hydrogen-home-page">
+                    <!-- Matrix数字雨背景 -->
+                    <canvas id="matrix-canvas"></canvas>
+                    
+                    <!-- 主内容区域 -->
+                    <div class="home-content">
+                        <!-- 顶部标题区域 -->
+                        <div class="home-header">
+                            <div class="main-title-wrapper">
+                                <h1 class="main-title" data-text="智慧绿氢管理系统">
+                                    <span class="title-text">智慧绿氢管理系统</span>
+                                    <span class="title-glitch">智慧绿氢管理系统</span>
+                                    <span class="title-glitch-2">智慧绿氢管理系统</span>
+                                </h1>
+                                <div class="subtitle">SANY Intelligent Green Hydrogen Management System</div>
+                            </div>
+                        </div>
+
+                        <!-- 中央核心展示区 -->
+                        <div class="core-display">
+                            <!-- 氢分子动画 -->
+                            <div class="hydrogen-molecule">
+                                <div class="molecule-container">
+                                    <div class="atom atom-1"></div>
+                                    <div class="atom atom-2"></div>
+                                    <div class="bond"></div>
+                                    <div class="electron electron-1"></div>
+                                    <div class="electron electron-2"></div>
+                                    <div class="electron electron-3"></div>
+                                    <div class="electron electron-4"></div>
+                                </div>
+                            </div>
+
+                            <!-- 实时数据环 -->
+                            <div class="data-ring">
+                                <svg class="ring-svg" viewBox="0 0 400 400">
+                                    <defs>
+                                        <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#00ff88;stop-opacity:1" />
+                                            <stop offset="50%" style="stop-color:#00aaff;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#0066ff;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="ring-bg" cx="200" cy="200" r="180" />
+                                    <circle class="ring-progress" cx="200" cy="200" r="180" />
+                                </svg>
+                                
+                                <!-- 数据指标 -->
+                                <div class="ring-data">
+                                    <div class="data-item" style="--angle: 0deg">
+                                        <div class="point-top-content">
+                                            <div class="data-icon"><i class="el-icon-sunny"></i></div>
+                                            <div class="data-label">光伏功率</div>
+                                        </div>
+                                        <div class="point-bottom-content">
+                                            <div class="data-value">{{ latestData.data ? latestData.data.solar_power.toFixed(1) : '0.0' }}</div>
+                                            <div class="data-unit">MW</div>
+                                        </div>
+                                    </div>
+                                    <div class="data-item" style="--angle: 60deg">
+                                        <div class="point-top-content">
+                                            <div class="data-icon"><i class="el-icon-refresh"></i></div>
+                                            <div class="data-label">风电功率</div>
+                                        </div>
+                                        <div class="point-bottom-content">
+                                            <div class="data-value">{{ latestData.data ? latestData.data.wind_power.toFixed(1) : '0.0' }}</div>
+                                            <div class="data-unit">MW</div>
+                                        </div>
+                                    </div>
+                                    <div class="data-item" style="--angle: 120deg">
+                                        <div class="point-top-content">
+                                            <div class="data-icon"><i class="el-icon-water-cup"></i></div>
+                                            <div class="data-label">制氢功率</div>
+                                        </div>
+                                        <div class="point-bottom-content">
+                                            <div class="data-value">{{ latestData.data ? latestData.data.hydrogen_power.toFixed(1) : '0.0' }}</div>
+                                            <div class="data-unit">MW</div>
+                                        </div>
+                                    </div>
+                                    <div class="data-item" style="--angle: 180deg">
+                                        <div class="point-top-content">
+                                            <div class="data-icon"><i class="el-icon-lightning"></i></div>
+                                            <div class="data-label">储能功率</div>
+                                        </div>
+                                        <div class="point-bottom-content">
+                                            <div class="data-value">{{ latestData.data ? latestData.data.storage_power.toFixed(1) : '0.0' }}</div>
+                                            <div class="data-unit">MW</div>
+                                        </div>
+                                    </div>
+                                    <div class="data-item" style="--angle: 240deg">
+                                        <div class="point-top-content">
+                                            <div class="data-icon"><i class="el-icon-connection"></i></div>
+                                            <div class="data-label">电网功率</div>
+                                        </div>
+                                        <div class="point-bottom-content">
+                                            <div class="data-value">{{ latestData.data ? Math.abs(latestData.data.grid_power).toFixed(1) : '0.0' }}</div>
+                                            <div class="data-unit">MW</div>
+                                        </div>
+                                    </div>
+                                    <div class="data-item" style="--angle: 300deg">
+                                        <div class="point-top-content">
+                                            <div class="data-icon"><i class="el-icon-odometer"></i></div>
+                                            <div class="data-label">供氢速率</div>
+                                        </div>
+                                        <div class="point-bottom-content">
+                                            <div class="data-value">{{ getHydrogenSupplyRate(latestData.data).toFixed(2) }}</div>
+                                            <div class="data-unit">Nm³/h</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 底部信息展示 -->
+                        <div class="home-footer">
+                            <div class="info-cards">
+                                <div class="info-card">
+                                    <div class="point-top-content">
+                                        <div class="card-icon">
+                                            <!-- 多能互补协同图标 - 更科技感 -->
+                                            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="18" cy="18" r="8" stroke="#00ff88" stroke-width="2" stroke-dasharray="2 1"/>
+                                                <path d="M18 6V10M18 26V30M6 18H10M26 18H30" stroke="#00ff88" stroke-width="2" stroke-linecap="round"/>
+                                                <path d="M13 18C13 15.2386 15.2386 13 18 13C20.7614 13 23 15.2386 23 18" stroke="#00ff88" stroke-width="2"/>
+                                                <circle cx="18" cy="18" r="2" fill="#00ff88"/>
+                                                <path d="M9 12L12 15M27 12L24 15M9 24L12 21M27 24L24 21" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="card-title" style="color: #aaaaaa; font-weight: 600; letter-spacing: 1px;">多能互补协同</div>
+                                    </div>
+                                    <!-- 删除了文字下面的-- -->
+                                </div>
+                                <div class="info-card">
+                                    <div class="point-top-content">
+                                        <div class="card-icon">
+                                            <!-- 智慧能量管理图标 - 更科技感 -->
+                                            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect x="7" y="14" width="22" height="15" rx="1" stroke="#00ff88" stroke-width="2"/>
+                                                <path d="M11 14V10C11 8.34315 12.3431 7 14 7H22C23.6569 7 25 8.34315 25 10V14" stroke="#00ff88" stroke-width="2"/>
+                                                <path d="M15 20L18 17L21 20L18 23L15 20Z" fill="#00ff88"/>
+                                                <circle cx="18" cy="20" r="6" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="1 1"/>
+                                                <path d="M10 24H26" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
+                                                <path d="M13 27H23" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="card-title" style="color: #aaaaaa; font-weight: 600; letter-spacing: 1px;">智慧能量管理</div>
+                                    </div>
+                                    <!-- 删除了文字下面的-- -->
+                                </div>
+                                <div class="info-card">
+                                    <div class="point-top-content">
+                                        <div class="card-icon">
+                                            <!-- 先进集群控制图标 - 更科技感 -->
+                                            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="11" cy="18" r="5" stroke="#00ff88" stroke-width="2"/>
+                                                <circle cx="25" cy="10" r="4" stroke="#00ff88" stroke-width="2"/>
+                                                <circle cx="25" cy="26" r="4" stroke="#00ff88" stroke-width="2"/>
+                                                <path d="M11 15V21" stroke="#00ff88" stroke-width="1.5"/>
+                                                <path d="M8 18H14" stroke="#00ff88" stroke-width="1.5"/>
+                                                <path d="M16 16L20 12" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
+                                                <path d="M16 20L20 24" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round"/>
+                                                <path d="M25 14V22" stroke="#00ff88" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1 1"/>
+                                                <circle cx="25" cy="10" r="1.5" fill="#00ff88"/>
+                                                <circle cx="25" cy="26" r="1.5" fill="#00ff88"/>
+                                                <circle cx="11" cy="18" r="1.5" fill="#00ff88"/>
+                                            </svg>
+                                        </div>
+                                        <div class="card-title" style="color: #aaaaaa; font-weight: 600; letter-spacing: 1px;">先进集群控制</div>
+                                    </div>
+                                    <!-- 删除了文字下面的-- -->
+                                </div>
+                                <div class="info-card">
+                                    <div class="point-top-content">
+                                        <div class="card-icon">
+                                            <!-- 实时数据分析图标 - 更科技感 -->
+                                            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect x="5" y="8" width="26" height="20" rx="1" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="2 1"/>
+                                                <path d="M5 12H31" stroke="#00ff88" stroke-width="1.5"/>
+                                                <path d="M8 10H9" stroke="#00ff88" stroke-width="2" stroke-linecap="round"/>
+                                                <path d="M12 10H13" stroke="#00ff88" stroke-width="2" stroke-linecap="round"/>
+                                                <path d="M28 19L23 15L18 21L13 18L8 23" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <circle cx="23" cy="15" r="1.5" fill="#00ff88"/>
+                                                <circle cx="18" cy="21" r="1.5" fill="#00ff88"/>
+                                                <circle cx="13" cy="18" r="1.5" fill="#00ff88"/>
+                                            </svg>
+                                        </div>
+                                        <div class="card-title" style="color: #aaaaaa; font-weight: 600; letter-spacing: 1px;">实时数据分析</div>
+                                    </div>
+                                    <!-- 删除了文字下面的-- -->
+                                </div>
+                            </div>
+                            
+                            <div class="system-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ latestData.data && latestData.data.total_production ? (latestData.data.total_production / 11123).toFixed(2) : '0.00' }}</div>
+                                    <div class="stat-label">累计产氢量(吨)</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ latestData.data ? (latestData.data.green_electricity_ratio || 0).toFixed(1) : '0.0' }}</div>
+                                    <div class="stat-label">绿电比例(%)</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">20</div>
+                                    <div class="stat-label">电解槽数量</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">{{ latestData.data && latestData.data.system_runtime ? formatRuntime(latestData.data.system_runtime) : '00时00分00秒' }}</div>
+                                    <div class="stat-label">系统运行时间</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 能量管理页面 -->
+            <div v-show="currentPage === 2" class="page-content">
+            <div class="main-container">
+                <!-- 上部布局容器 -->
+                <div class="layout-container">
+                    <!-- 左侧区域 -->
+                    <div class="left-column">
+                        <!-- 顶部行：系统状态和社会贡献 -->
+                        <div class="top-section">
+                            <!-- 系统状态卡片 - 现代化设计 -->
+                            <div class="modern-card system-status">
+                                <div class="modern-card-header">
+                                    <div class="modern-card-title">系统状态</div>
+                                    <div class="status-indicator" :class="{'status-online': latestData.data && latestData.data.system_enable_status, 'status-offline': !(latestData.data && latestData.data.system_enable_status)}">
+                                        {{ latestData.data && latestData.data.system_enable_status ? 'ONLINE' : 'OFFLINE' }}
+                                    </div>
+                                </div>
+                                <div class="modern-card-body">
+                                    <div class="status-grid">
+                                        <div class="status-item" :class="{active: latestData.data && latestData.data.grid_connected_status}">
+                                            <div class="status-icon" :class="{'online': latestData.data && latestData.data.grid_connected_status}">
+                                                <i class="el-icon-connection"></i>
+                                            </div>
+                                            <span class="status-text">电网连接</span>
+                                        </div>
+                                        <div class="status-item" :class="{active: latestData.data && latestData.data.storage_power !== 0}">
+                                            <div class="status-icon" :class="{'online': latestData.data && latestData.data.storage_power !== 0}">
+                                                <i class="el-icon-lightning"></i>
+                                            </div>
+                                            <span class="status-text">储能运行</span>
+                                        </div>
+                                        <div class="status-item" :class="{active: latestData.data && latestData.data.solar_power > 0}">
+                                            <div class="status-icon" :class="{'online': latestData.data && latestData.data.solar_power > 0}">
+                                                <i class="el-icon-sunny"></i>
+                                            </div>
+                                            <span class="status-text">光伏发电</span>
+                                        </div>
+                                        <div class="status-item" :class="{active: latestData.data && latestData.data.system_enable_status}">
+                                            <div class="status-icon" :class="{'online': latestData.data && latestData.data.system_enable_status}">
+                                                <i class="el-icon-cpu"></i>
+                                            </div>
+                                            <span class="status-text">系统使能</span>
+                                        </div>
+                                        <div class="status-item" :class="{active: latestData.data && latestData.data.wind_power > 0}">
+                                            <div class="status-icon" :class="{'online': latestData.data && latestData.data.wind_power > 0}">
+                                                <i class="el-icon-refresh"></i>
+                                            </div>
+                                            <span class="status-text">风力发电</span>
+                                        </div>
+                                        <div class="status-item" :class="{active: latestData.data && latestData.data.hydrogen_real_power > 0}">
+                                            <div class="status-icon" :class="{'online': latestData.data && latestData.data.hydrogen_real_power > 0}">
+                                                <i class="el-icon-water-cup"></i>
+                                            </div>
+                                            <span class="status-text">制氢运行</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PPC状态指标 - 现代化设计 -->
+                            <div class="modern-card data-table-container">
+                                <div class="modern-card-header">
+                                    <div class="modern-card-title">电网状态</div>
+                                    <div class="status-indicator" :class="{'status-online': latestData.data && latestData.data.grid_connected_status, 'status-offline': !(latestData.data && latestData.data.grid_connected_status)}">
+                                        <!-- <i class="el-icon-connection"></i> REMOVED ICON -->
+                                        {{ latestData.data && latestData.data.grid_connected_status ? '已连接' : '未连接' }}
+                                    </div>
+                                </div>
+                                <div class="modern-card-body">
+                                    <table class="data-table">
+                                        <tr>
+                                            <td style="width: 50%;"> <!-- Increased width for label -->
+                                                <i class="el-icon-connection" style="margin-right: 8px; color: var(--info);"></i>
+                                                上下网功率
+                                            </td>
+                                            <td style="width: 50%; text-align: right; padding-right: 10px;"> <!-- Ensure value aligns right -->
+                                                <span class="data-value">{{ latestData.data ? Math.round(latestData.data.grid_power) : 0 }}</span>
+                                                <span class="data-unit">MW</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <i class="el-icon-top" style="margin-right: 8px; color: var(--success);"></i>
+                                                上网电量
+                                            </td>
+                                            <td>
+                                                <span class="data-value">{{ latestData.data ? Math.round(latestData.data.grid_export_energy) : 0 }}</span>
+                                                <span class="data-unit">MWh</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <i class="el-icon-bottom" style="margin-right: 8px; color: var(--warning);"></i>
+                                                下网电量
+                                            </td>
+                                            <td>
+                                                <span class="data-value">{{ calculateGridImportEnergy(latestData.data).toFixed(2) }}</span>
+                                                <span class="data-unit">MWh</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <i class="el-icon-odometer" style="margin-right: 8px; color: var(--primary-color);"></i>
+                                                电网电压
+                                            </td>
+                                            <td>
+                                                <span class="data-value">{{ latestData.data ? latestData.data.grid_voltage.toFixed(1) : 0 }}</span>
+                                                <span class="data-unit">kV</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <i class="el-icon-data-line" style="margin-right: 8px; color: var(--info);"></i>
+                                                电网频率
+                                            </td>
+                                            <td>
+                                                <span class="data-value">{{ latestData.data ? latestData.data.grid_frequency.toFixed(2) : 0 }}</span>
+                                                <span class="data-unit">Hz</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 中间行：系统采集数据 - 现代化设计 -->
+                        <div class="middle-section">
+                            <!-- 系统数据卡片 -->
+                            <div class="modern-card system-data">
+                                <div class="modern-card-header">
+                                    <div class="modern-card-title">实时运行数据</div>
+                                    <div class="data-refresh-indicator">
+                                        <i class="el-icon-refresh" style="animation: spin 2s linear infinite; color: var(--success);"></i>
+                                        实时更新
+                                    </div>
+                                </div>
+                                <div class="modern-card-body" style="padding: var(--spacing-md); overflow-y: auto;">
+                                    <table class="data-table-modern">
+                                        <!-- 移除表头 -->
+                                        <tbody>
+                                            <tr>
+                                                <td>风电功率</td>
+                                                <td>
+                                                    <span class="wind-power data-value">{{ latestData.data ? latestData.data.wind_power.toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">MW</span>
+                                                </td>
+                                                <td>风电预测</td>
+                                                <td>
+                                                    <span class="wind-power data-value">{{ latestData.data ? latestData.data.wind_power_forecast.toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">MW</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>光伏功率</td>
+                                                <td>
+                                                    <span class="solar-power data-value">{{ latestData.data ? latestData.data.solar_power.toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">MW</span>
+                                                </td>
+                                                <td>光伏预测</td>
+                                                <td>
+                                                    <span class="solar-power data-value">{{ calculateSolarForecast(latestData.data).toFixed(2) }}</span>
+                                                    <span class="data-unit">MW</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>储能功率</td>
+                                                <td>
+                                                    <span class="storage-power data-value">{{ latestData.data ? latestData.data.storage_power.toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">MW</span>
+                                                </td>
+                                                <td>风电利用率</td>
+                                                <td>
+                                                    <span class="data-value">{{ latestData.data ? latestData.data.wind_utilization_rate.toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">%</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>制氢给定</td>
+                                                <td>
+                                                    <span class="hydrogen-power data-value">{{ latestData.data && latestData.data.electrolyzer_set_power ? (latestData.data.electrolyzer_set_power.reduce((sum, val) => sum + val, 0)).toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">MW</span>
+                                                </td>
+                                                <td>制氢功率</td>
+                                                <td>
+                                                    <span class="hydrogen-power data-value">{{ latestData.data ? latestData.data.hydrogen_power.toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">MW</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>总下网电量</td>
+                                                <td>
+                                                    <span class="data-value">{{ calculateGridImportEnergyTotal(latestData.data).toFixed(2) }}</span>
+                                                    <span class="data-unit">MWh</span>
+                                                </td>
+                                                <td>氢气产量</td>
+                                                <td>
+                                                    <span class="data-value">{{ calculateHydrogenProduction(latestData.data) }}</span>
+                                                    <span class="data-unit">吨</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>绿电比率</td>
+                                                <td>
+                                                    <span class="data-value">{{ latestData.data ? (latestData.data.green_electricity_ratio || 0).toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">%</span>
+                                                </td>
+                                                <td>光伏利用率</td>
+                                                <td>
+                                                    <span class="data-value">{{ latestData.data ? (latestData.data.solar_utilization_rate || 0).toFixed(2) : '0.00' }}</span>
+                                                    <span class="data-unit">%</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>运行时间</td>
+                                                <td>
+                                                    <span class="data-value">{{ latestData.data && latestData.data.system_runtime ? formatRuntime(latestData.data.system_runtime) : '00时00分00秒' }}</span>
+                                                </td>
+                                                <td>储氢SOH</td>
+                                                <td>
+                                                    <span class="data-value">{{ getStorageSOH(latestData.data).toFixed(1) }}</span>
+                                                    <span class="data-unit">%</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>光伏发电量</td>
+                                                <td>
+                                                    <span class="data-value">{{ totalSolarEnergy.toFixed(2) }}</span>
+                                                    <span class="data-unit">MWh</span>
+                                                </td>
+                                                <td>供氢速率</td>
+                                                <td>
+                                                    <span class="data-value">{{ getHydrogenSupplyRate(latestData.data).toFixed(2) }}</span>
+                                                    <span class="data-unit">Nm³/h</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧区域：场站功率曲线 - 现代化设计 -->
+                    <div class="right-column">
+                        <!-- 功率曲线图表 -->
+                        <div class="modern-card power-curve glow-effect">
+                                <div class="modern-card-header">
+                                    <div class="modern-card-title">功率监控</div>
+                                    <div class="chart-controls">
+                                        <span v-if="aggregationInfo.minutes > 1" class="time-range-indicator" style="background-color: #e6a23c; color: white;">
+                                            <i class="el-icon-s-data" style="margin-right: 4px;"></i>
+                                            {{ aggregationInfo.minutes }}分钟仿真
+                                        </span>
+                                        <span class="time-range-indicator">
+                                            <i class="el-icon-time" style="margin-right: 4px; color: var(--success);"></i>
+                                            最近16小时
+                                        </span>
+                                    </div>
+                                </div>
+                            <div class="modern-card-body" style="padding: 0; position: relative;">
+                                <div class="chart-legend-modern">
+                                    <div class="legend-item-modern">
+                                        <div class="legend-color-modern" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);"></div>
+                                        <div class="legend-text-modern">风电功率</div>
+                                    </div>
+                                    <div class="legend-item-modern">
+                                        <div class="legend-color-modern" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);"></div>
+                                        <div class="legend-text-modern">光伏功率</div>
+                                    </div>
+                                    <div class="legend-item-modern">
+                                        <div class="legend-color-modern" style="background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);"></div>
+                                        <div class="legend-text-modern">储能功率</div>
+                                    </div>
+                                    <div class="legend-item-modern">
+                                        <div class="legend-color-modern" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);"></div>
+                                        <div class="legend-text-modern">制氢功率</div>
+                                    </div>
+                                    <div class="legend-item-modern">
+                                        <div class="legend-color-modern" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);"></div>
+                                        <div class="legend-text-modern">上下网功率</div>
+                                    </div>
+                                </div>
+                                <div id="powerCurveChart" style="width: 100%; height: calc(100% - 20px); min-height: 300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- 第三行内容：图表行 -->
+            <div class="content-row bottom-row">
+                <!-- 发电量统计图表 -->
+                <div class="modern-card chart-card glow-effect">
+                    <div class="modern-card-header">
+                        <div class="modern-card-title">
+                            <i class="el-icon-data-line" style="margin-right: 8px; color: var(--success);"></i>
+                            发电量
+                        </div>
+                        <div class="chart-controls">
+                            <span class="chart-time-indicator">
+                                <i class="el-icon-time" style="margin-right: 4px; color: var(--success);"></i>
+                                24小时
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modern-card-body">
+                        <div class="chart-container">
+                            <div id="powerGenerationChart" style="width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 供氢负载统计图表 -->
+                <div class="modern-card chart-card glow-effect">
+                    <div class="modern-card-header">
+                        <div class="modern-card-title">
+                            <i class="el-icon-s-data" style="margin-right: 8px; color: var(--success);"></i>
+                            供氢负载
+                        </div>
+                        <div class="chart-controls">
+                            <span class="chart-time-indicator">
+                                <i class="el-icon-time" style="margin-right: 4px; color: var(--success);"></i>
+                                24小时
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modern-card-body">
+                        <div class="chart-container">
+                            <div id="hydrogenLoadChart" style="width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 储氢状态监控图表 -->
+                <div class="modern-card chart-card glow-effect">
+                    <div class="modern-card-header">
+                        <div class="modern-card-title">
+                            <i class="el-icon-pie-chart" style="margin-right: 8px; color: var(--success);"></i>
+                            储氢状态
+                        </div>
+                        <div class="chart-controls">
+                            <span class="chart-time-indicator">
+                                <i class="el-icon-time" style="margin-right: 4px; color: var(--success);"></i>
+                                实时
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modern-card-body">
+                        <div class="chart-container">
+                            <div id="storageChart" style="width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- 制氢系统页面 - 现代化设计 -->
+        <div v-show="currentPage === 3" class="page-content">
+            <div class="production-settings-page">
+                <div class="production-layout">
+                    <!-- 左侧总体信息区域 - 现代化设计 -->
+                    <div class="production-info-section">
+                        <!-- 系统概览卡片 -->
+                        <div class="modern-card" style="margin-bottom: var(--space-4);">
+                            <div class="modern-card-header">
+                                <div class="modern-card-title">制氢系统概览</div>
+                                <div class="system-efficiency">
+                                    <span class="efficiency-label">供氢速率</span>
+                                    <span class="efficiency-value">{{ getHydrogenSupplyRate(latestData.data).toFixed(2) }} Nm³/h</span>
+                                </div>
+                            </div>
+                            <div class="modern-card-body">
+                                <div class="info-metrics-grid">
+                                    <!-- 制氢功率 -->
+                                    <div class="info-metric-card">
+                                        <div class="metric-icon">
+                                            <i class="el-icon-lightning" style="color: var(--success);"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">制氢功率</div>
+                                            <div class="metric-value">
+                                                <span class="value">{{ latestData.data ? formatNumber(latestData.data.hydrogen_power) : '0' }}</span>
+                                                <span class="unit">MW</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 产氢速率 -->
+                                    <div class="info-metric-card">
+                                        <div class="metric-icon">
+                                            <i class="el-icon-water-cup" style="color: var(--info);"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">产氢速率</div>
+                                            <div class="metric-value">
+                                                <span class="value">{{ latestData.data && latestData.data.production_rate ? formatNumber(latestData.data.production_rate.toFixed(1)) : '0.0' }}</span>
+                                                <span class="unit">Nm³/h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 制氢能耗 -->
+                                    <div class="info-metric-card">
+                                        <div class="metric-icon">
+                                            <i class="el-icon-odometer" style="color: var(--warning);"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">供氢速率</div>
+                                            <div class="metric-value">
+                                                <span class="value">{{ getHydrogenSupplyRate(latestData.data).toFixed(2) }}</span>
+                                                <span class="unit">Nm³/h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 实时产氢量 -->
+                                    <div class="info-metric-card">
+                                        <div class="metric-icon">
+                                            <i class="el-icon-s-data" style="color: var(--primary-blue);"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">实时产氢量</div>
+                                            <div class="metric-value">
+                                                <span class="value">{{ latestData.data && latestData.data.production_rate ? (latestData.data.production_rate / 11123).toFixed(3) : '0.000' }}</span>
+                                                <span class="unit">吨/h</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 累计产氢量 -->
+                                    <div class="info-metric-card">
+                                        <div class="metric-icon">
+                                            <i class="el-icon-coin" style="color: var(--primary-blue);"></i>
+                                        </div>
+                                        <div class="metric-content">
+                                            <div class="metric-label">累计产氢量</div>
+                                            <div class="metric-value">
+                                                <span class="value">{{ latestData.data && latestData.data.total_production ? (latestData.data.total_production / 11123).toFixed(2) : '0.00' }}</span>
+                                                <span class="unit">吨</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 设备状态统计卡片 -->
+                        <div class="modern-card" style="margin-bottom: var(--space-4);">
+                            <div class="modern-card-header">
+                                <div class="modern-card-title">设备状态统计</div>
+                                <div class="total-units">
+                                    总计 <span class="units-count">{{ (latestData.data ? (latestData.data.running_count || 0) + (latestData.data.shutdown_count || 0) + (latestData.data.hot_standby_count || 0) + (latestData.data.cold_start_count || 0) + (latestData.data.hot_start_count || 0) + (latestData.data.maintenance_count || 0) : 0) }}</span> 台
+                                </div>
+                            </div>
+                            <div class="modern-card-body">
+                                <div class="status-statistics-grid">
+                                    <!-- 运行数量 -->
+                                    <div class="status-stat-item running">
+                                        <div class="stat-icon">
+                                            <i class="el-icon-check"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">运行中</div>
+                                            <div class="stat-value">{{ latestData.data ? latestData.data.running_count : '0' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 停机（冷备）数量 -->
+                                    <div class="status-stat-item standby">
+                                        <div class="stat-icon">
+                                            <i class="el-icon-time"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">停机</div>
+                                            <div class="stat-value">{{ latestData.data ? latestData.data.shutdown_count : '0' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 热备数量 -->
+                                    <div class="status-stat-item hot-standby">
+                                        <div class="stat-icon">
+                                            <i class="el-icon-coffee-cup"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">热备</div>
+                                            <div class="stat-value">{{ latestData.data ? (latestData.data.hot_standby_count || 0) : '0' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 冷启动数量 -->
+                                    <div class="status-stat-item cold-start">
+                                        <div class="stat-icon">
+                                            <i class="el-icon-loading"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">冷启动</div>
+                                            <div class="stat-value">{{ latestData.data ? latestData.data.cold_start_count : '0' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 热启动数量 -->
+                                    <div class="status-stat-item hot-start">
+                                        <div class="stat-icon">
+                                            <i class="el-icon-video-play"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">热启动</div>
+                                            <div class="stat-value">{{ latestData.data ? latestData.data.hot_start_count : '0' }}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 维护数量 -->
+                                    <div class="status-stat-item maintenance">
+                                        <div class="stat-icon">
+                                            <i class="el-icon-setting"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">维护</div>
+                                            <div class="stat-value">{{ latestData.data ? latestData.data.maintenance_count : '0' }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 设备信息部分 -->
+                        <h4 class="subsection-title">设备信息</h4>
+                        <div class="equipment-info">
+                            <table class="fault-table">
+                                <thead>
+                                    <tr>
+                                        <th>槽编号</th>
+                                        <th>故障类型</th>
+                                        <th>故障时间</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#5</td>
+                                        <td>温度传感器异常</td>
+                                        <td>2025-04-08 15:23</td>
+                                        <td><span class="status-unresolved">未解决</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#12</td>
+                                        <td>压力过高报警</td>
+                                        <td>2025-04-09 08:45</td>
+                                        <td><span class="status-processing">处理中</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#15</td>
+                                        <td>液位传感器故障</td>
+                                        <td>2025-04-09 10:17</td>
+                                        <td><span class="status-processing">处理中</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 右侧电解槽状态区域 - 现代化设计 -->
+                    <div class="production-units-section">
+                        <div class="modern-card" style="height: 100%;">
+                            <div class="modern-card-header">
+                                <div class="modern-card-title">电解槽运行状态</div>
+                                <div class="units-summary" style="display: flex; align-items: center; gap: 10px;">
+                                    <span v-if="aggregationInfo.minutes > 1" class="time-range-indicator" style="background-color: #e6a23c; color: white; padding: 2px 6px; font-size: 12px; border-radius: 4px;">
+                                        <i class="el-icon-s-data" style="margin-right: 4px;"></i>
+                                        {{ aggregationInfo.minutes }}分钟仿真
+                                    </span>
+                                    <span class="summary-item running">
+                                        <i class="el-icon-check"></i>
+                                        {{ latestData.data ? latestData.data.running_count : '0' }}台运行
+                                    </span>
+                                    <span class="summary-item standby">
+                                        <i class="el-icon-time"></i>
+                                        {{ latestData.data ? latestData.data.standby_count : '0' }}台停机
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="modern-card-body" style="padding: var(--space-4);">
+                                <div class="unit-grid-modern">
+                                    <!-- 电解槽单元格 - 现代化设计 -->
+                                    <div class="unit-cell-modern" v-for="i in 20" :key="i-1" :data-status="getStatusClass(latestData.data, 'electrolyzer_status', i-1)">
+                                        <!-- 顶部：编号 ---- 状态 (20%高度) -->
+                                        <div class="unit-header-modern">
+                                            <span class="unit-number-modern">#{{ i }}</span>
+                                            <span class="unit-status-modern" :class="getStatusClass(latestData.data, 'electrolyzer_status', i-1)">
+                                                {{ getStatusText(latestData.data, 'electrolyzer_status', i-1) }}
+                                            </span>
+                                        </div>
+                                        
+                                        <!-- 中间：4个指标水平排列 (50%高度) -->
+                                        <div class="unit-metrics-modern">
+                                            <div class="unit-metric-modern">
+                                                <div class="unit-metric-label">给定功率</div>
+                                                <div class="unit-metric-value">{{ getFormattedValue(latestData.data, 'electrolyzer_set_power', i-1, 1) }}</div>
+                                            </div>
+                                            <div class="unit-metric-modern">
+                                                <div class="unit-metric-label">产氢率</div>
+                                                <div class="unit-metric-value">{{ getHydrogenRate(latestData.data, 'hydrogen_rate', i-1) }}</div>
+                                            </div>
+                                            <div class="unit-metric-modern">
+                                                <div class="unit-metric-label">温度</div>
+                                                <div class="unit-metric-value">{{ getFormattedValue(latestData.data, 'electrolyzer_temp', i-1, 1) }}°C</div>
+                                            </div>
+                                            <div class="unit-metric-modern">
+                                                <div class="unit-metric-label">能耗</div>
+                                                <div class="unit-metric-value">{{ getEnergyConsumption(latestData.data, 'electrolyzer_real_power', 'hydrogen_rate', i-1) }}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 底部：实际功率进度条，条中显示实际功率 (30%高度) -->
+                                        <div class="unit-progress-modern">
+                                            <div class="unit-progress-bar">
+                                                <div class="unit-progress-fill" 
+                                                     :style="{ width: getProgressBarWidth(latestData.data, 'electrolyzer_real_power', i-1) }"
+                                                     :data-power="getFormattedValue(latestData.data, 'electrolyzer_real_power', i-1, 1) == '0.0' ? 'zero' : 'normal'">
+                                                </div>
+                                                <div class="unit-power-progress-text">
+                                                    运行功率 {{ getFormattedValue(latestData.data, 'electrolyzer_real_power', i-1, 1) }}MW
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统管理页面 -->
+        <div v-show="currentPage === 4" class="page-content">
+            <div class="coming-soon">将根据客户项目定制开发...</div>
+        </div>
+
+        <!-- 数据分析页面 -->
+        <div v-show="currentPage === 5" class="page-content">
+            <div class="data-analysis-container" style="padding:10px 20px;">
+                <!-- 控制区域 -->
+                <div class="data-analysis-controls" style="margin-top:0; padding:10px; background-color:rgba(16, 33, 49, 0.8); border-radius:4px; border:1px solid rgba(0, 174, 255, 0.2);">
+                    <div style="display:flex; flex-direction:row; gap:15px;">
+                        <!-- 左侧：变量选择 -->
+                        <div style="flex:1; max-width:48%;">
+                            <div class="control-row" style="display:flex; flex-direction:row; align-items:center; margin-bottom:0;">
+                                <label for="variable-select" style="white-space:nowrap; margin-right:10px;">选择变量：</label>
+                                <div style="flex:1; display:flex;">
+                                    <div style="flex:1; margin-right:10px;">
+                                        <multiselect
+                                            v-model="selectedVariables"
+                                            :options="variables"
+                                            :multiple="true"
+                                            :close-on-select="false"
+                                            :clear-on-select="false"
+                                            :preserve-search="true"
+                                            placeholder="选择变量"
+                                            label="label"
+                                            track-by="name"
+                                            :preselect-first="false"
+                                            :hide-selected="false"
+                                            :max-height="300"
+                                            :allow-empty="true"
+                                            :show-labels="false"
+                                            :searchable="true"
+                                            :internal-search="true"
+                                            :taggable="false"
+                                            :show-pointer="true"
+                                            :disabled="dataLoading"
+                                        >
+                                            <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                                <span class="multiselect__single" v-if="values.length && !isOpen">已选择 {{ values.length }} 个变量</span>
+                                            </template>
+                                        </multiselect>
+                                    </div>
+                                    <button @click="clearVariables" style="white-space:nowrap; padding:8px 15px; background-color:#1890ff; color:white; border:none; border-radius:4px; cursor:pointer;" :disabled="dataLoading">清除</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：时间范围选择 -->
+                        <div style="flex:1; max-width:48%;">
+                            <div class="control-row" style="display:flex; flex-direction:row; align-items:center;">
+                                <label style="white-space:nowrap; margin-right:10px;">时间范围：</label>
+                                <div style="flex:1; display:flex; flex-wrap:wrap; gap:10px;">
+                                    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:10px;">
+                                        <select v-model="timeRange" style="padding:8px; background-color:rgba(30, 60, 90, 0.5); border:1px solid rgba(0, 174, 255, 0.3); border-radius:4px; color:white; min-width:120px;" :disabled="dataLoading" aria-label="时间范围">
+                                            <option value="5m">最近5分钟</option>
+                                            <option value="15m">最近15分钟</option>
+                                            <option value="30m">最近30分钟</option>
+                                            <option value="1h">最近1小时</option>
+                                            <option value="6h">最近6小时</option>
+                                            <option value="12h">最近12小时</option>
+                                            <option value="24h">最近24小时</option>
+                                            <option value="custom">自定义时间</option>
+                                        </select>
+
+                                        <div v-if="timeRange === 'custom'" style="display:flex; gap:10px; flex-wrap:wrap;">
+                                            <div style="display:flex; flex-direction:column; gap:5px;">
+                                                <label style="font-size:12px; color:#e6e6e6;">开始时间:</label>
+                                                <input type="datetime-local" v-model="startTime" style="padding:8px; background-color:rgba(30, 60, 90, 0.5); border:1px solid rgba(0, 174, 255, 0.3); border-radius:4px; color:white;" :disabled="dataLoading" aria-label="开始时间">
+                                            </div>
+                                            <div style="display:flex; flex-direction:column; gap:5px;">
+                                                <label style="font-size:12px; color:#e6e6e6;">结束时间:</label>
+                                                <input type="datetime-local" v-model="endTime" style="padding:8px; background-color:rgba(30, 60, 90, 0.5); border:1px solid rgba(0, 174, 255, 0.3); border-radius:4px; color:white;" :disabled="dataLoading" aria-label="结束时间">
+                                            </div>
+                                        </div>
+
+                                        <button @click="loadVariableData" style="padding:8px 15px; background-color:#1890ff; color:white; border:none; border-radius:4px; cursor:pointer;" :disabled="dataLoading || selectedVariables.length === 0">
+                                            <span v-if="dataLoading">加载中...</span>
+                                            <span v-else>加载数据</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 布局容器 - 使用flexbox垂直布局充满剩余空间 -->
+                <div class="data-analysis-content" style="margin-top:10px; display:flex; flex-direction:column; height:calc(100vh - 180px);">
+                    <!-- 图表容器 - 使用flex:1自动填充可用空间 -->
+                    <div class="chart-container" id="variable-chart-container" style="flex:1; min-height:300px; border:1px solid rgba(0, 174, 255, 0.2); border-radius:4px; background-color:rgba(16, 33, 49, 0.8); position:relative;">
+                    </div>
+
+                    <!-- 统计信息 - 固定高度位于底部 -->
+                    <div class="stats-container" style="display:flex; justify-content:space-between; height:36px; margin-top:5px; background-color:rgba(16, 33, 49, 0.8); border:1px solid rgba(0, 174, 255, 0.2); border-radius:4px; padding:0 10px;">
+                        <div class="stat-card" style="display:flex; align-items:center; padding:0 10px;">
+                            <span style="font-size:14px; color:#8e9dae; margin-right:5px;">最大值：</span>
+                            <span style="font-size:16px; font-weight:bold; color:#fff;">{{ variableData.length > 0 ? getStatValue('max') : '-' }}</span>
+                        </div>
+                        <div class="stat-card" style="display:flex; align-items:center; padding:0 10px;">
+                            <span style="font-size:14px; color:#8e9dae; margin-right:5px;">最小值：</span>
+                            <span style="font-size:16px; font-weight:bold; color:#fff;">{{ variableData.length > 0 ? getStatValue('min') : '-' }}</span>
+                        </div>
+                        <div class="stat-card" style="display:flex; align-items:center; padding:0 10px;">
+                            <span style="font-size:14px; color:#8e9dae; margin-right:5px;">平均值：</span>
+                            <span style="font-size:16px; font-weight:bold; color:#fff;">{{ variableData.length > 0 ? getStatValue('avg') : '-' }}</span>
+                        </div>
+                        <div class="stat-card" style="display:flex; align-items:center; padding:0 10px;">
+                            <span style="font-size:14px; color:#8e9dae; margin-right:5px;">标准差：</span>
+                            <span style="font-size:16px; font-weight:bold; color:#fff;">{{ variableData.length > 0 ? getStatValue('std') : '-' }}</span>
+                        </div>
+                        <div class="stat-card" style="display:flex; align-items:center; padding:0 10px;">
+                            <span style="font-size:14px; color:#8e9dae; margin-right:5px;">数据点数：</span>
+                            <span style="font-size:16px; font-weight:bold; color:#fff;">{{ variableData.length }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-analysis-footer" v-if="variableData.length === 0 && dataLoading">
+                    <div class="loading-indicator">正在加载数据...</div>
+                </div>
+                <div class="data-analysis-footer" v-else-if="variableData.length === 0 && !dataLoading">
+                    <div class="no-data-message">没有可用数据。请选择变量和时间范围。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 报表分析页面 -->
+        <div v-show="currentPage === 6" class="page-content">
+            <div class="report-analysis-container">
+                <!-- 控制区域 -->
+                <div class="report-analysis-controls">
+                    <div class="control-body" style="display:flex; flex-direction:row; flex-wrap:nowrap; justify-content:space-between; align-items:center;">
+                        <!-- 变量选择 - 40%宽度 -->
+                        <div class="control-group" style="width:40%; padding-right:10px;">
+                            <label for="report-variable-select">选择变量：</label>
+                            <div class="multiselect-container">
+                                <multiselect
+                                    v-model="selectedReportVariables"
+                                    :options="variables"
+                                    :multiple="true"
+                                    :close-on-select="false"
+                                    :clear-on-select="false"
+                                    :preserve-search="true"
+                                    placeholder="选择变量"
+                                    label="label"
+                                    track-by="name"
+                                    :preselect-first="false"
+                                    :hide-selected="false"
+                                    :max-height="300"
+                                    :allow-empty="true"
+                                    :show-labels="false"
+                                    :searchable="true"
+                                    :internal-search="true"
+                                    :taggable="false"
+                                    :show-pointer="true"
+                                    :disabled="reportLoading"
+                                >
+                                    <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                        <span class="multiselect__single" v-if="values.length && !isOpen">已选择 {{ values.length }} 个变量</span>
+                                    </template>
+                                </multiselect>
+                            </div>
+                        </div>
+
+                        <!-- 时间范围选择 - 40%宽度 -->
+                        <div class="control-group" style="width:40%; padding-right:10px;">
+                            <label>时间范围：</label>
+                            <div class="select-container" style="display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center;">
+                                <select v-model="reportTimeRange" :disabled="reportLoading" style="flex:0 0 auto; margin-right:10px;" aria-label="报表时间范围">
+                                    <option value="5m">最近5分钟</option>
+                                    <option value="15m">最近15分钟</option>
+                                    <option value="30m">最近30分钟</option>
+                                    <option value="1h">最近1小时</option>
+                                    <option value="6h">最近6小时</option>
+                                    <option value="12h">最近12小时</option>
+                                    <option value="24h">最近24小时</option>
+                                    <option value="custom">自定义时间</option>
+                                </select>
+
+                                <!-- 自定义时间选择 -->
+                                <div v-if="reportTimeRange === 'custom'" style="display:flex; flex-wrap:nowrap; align-items:center;">
+                                    <div style="margin-right:5px;">
+                                        <label style="display:block; font-size:12px;">开始时间:</label>
+                                        <input type="datetime-local" v-model="reportStartTime" :disabled="reportLoading" style="max-width:165px;" aria-label="报表开始时间">
+                                    </div>
+                                    <div>
+                                        <label style="display:block; font-size:12px;">结束时间:</label>
+                                        <input type="datetime-local" v-model="reportEndTime" :disabled="reportLoading" style="max-width:165px;" aria-label="报表结束时间">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 - 20%宽度 -->
+                        <div class="button-group" style="width:20%; display:flex; flex-direction:row; justify-content:flex-end;">
+                            <button class="action-btn load-btn" @click="loadReportData" :disabled="reportLoading || selectedReportVariables.length === 0" style="margin-right:5px;">
+                                <i class="el-icon-download"></i>
+                                <span v-if="reportLoading">加载中...</span>
+                                <span v-else>加载数据</span>
+                            </button>
+                            <button class="action-btn export-btn" @click="exportReportData" :disabled="reportLoading || reportData.length === 0" style="margin-right:5px;">
+                                <i class="el-icon-document"></i>
+                                导出CSV
+                            </button>
+                            <button class="action-btn" style="background-color:#f56c6c; color:white;" @click="clearReportVariables" :disabled="reportLoading">
+                                <i class="el-icon-delete"></i>
+                                清除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 报表内容区域 -->
+                <div class="report-analysis-content">
+                    <!-- 表格容器 -->
+                    <div class="table-container">
+                        <!-- 初始提示消息，将在加载数据时被替换 -->
+                        <div class="no-data-message-center">请选择变量和时间范围，然后点击"加载数据"</div>
+
+                        <!-- 表格内容 -->
+                        <table class="report-table" v-if="reportData.length > 0 && !reportLoading">
+                            <thead>
+                                <tr>
+                                    <th>时间戳</th>
+                                    <th v-for="variable in selectedReportVariables" :key="variable.name">
+                                        {{ variable.label }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(rowData, index) in reportData" :key="index">
+                                    <td>{{ formatTimestamp(rowData.timestamp) }}</td>
+                                    <td v-for="variable in selectedReportVariables" :key="variable.name">
+                                        <!-- 根据变量类型决定格式化方式 -->
+                                        <template v-if="variable.name.startsWith('electrolyzer_status')">
+                                            <!-- 电解槽状态显示原始数字 -->
+                                            {{ parseNumericValue(rowData[variable.name]) }}
+                                        </template>
+                                        <template v-else>
+                                            <!-- 其他数值格式化为 2 位小数 -->
+                                            {{ rowData[variable.name] !== null && rowData[variable.name] !== undefined ? parseFloat(rowData[variable.name]).toFixed(2) : '-' }}
+                                        </template>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 加载状态区域 -->
+                <div class="report-analysis-footer" v-if="reportLoading">
+                    <div class="loading-indicator">正在加载数据...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入应用脚本 -->
+    <script src="js/config.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

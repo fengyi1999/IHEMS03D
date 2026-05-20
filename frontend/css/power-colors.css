@@ -1,0 +1,303 @@
+/* 智慧绿氢管理系统 - 功率配色系统 */
+/* 为不同功率类型提供统一的配色标准 */
+
+/* ===== 功率配色定义 ===== */
+:root {
+  /* 功率等级配色 */
+  --power-critical: #FF4444;    /* 临界功率 (>90%) */
+  --power-high: #FF6B6B;        /* 高功率 (70-90%) */
+  --power-medium: #FFE66D;      /* 中等功率 (40-70%) */
+  --power-low: #4ECDC4;         /* 低功率 (20-40%) */
+  --power-minimal: #95A5A6;     /* 最低功率 (<20%) */
+  --power-normal: #10B981;      /* 正常运行功率 */
+  --power-optimal: #22C55E;     /* 最优功率范围 */
+  
+  /* 功率趋势配色 */
+  --power-increasing: #10B981;  /* 功率上升 */
+  --power-decreasing: #EF4444;  /* 功率下降 */
+  --power-stable: #6B7280;      /* 功率稳定 */
+  
+  /* 功率背景色 */
+  --power-bg-critical: rgba(255, 68, 68, 0.1);
+  --power-bg-high: rgba(255, 107, 107, 0.1);
+  --power-bg-medium: rgba(255, 230, 109, 0.1);
+  --power-bg-low: rgba(78, 205, 196, 0.1);
+  --power-bg-minimal: rgba(149, 165, 166, 0.1);
+  --power-bg-normal: rgba(16, 185, 129, 0.1);
+}
+
+/* ===== 功率值显示样式 ===== */
+.power-value-critical { 
+  color: var(--power-critical);
+  background-color: var(--power-bg-critical);
+}
+
+.power-value-high { 
+  color: var(--power-high);
+  background-color: var(--power-bg-high);
+}
+
+.power-value-medium { 
+  color: var(--power-medium);
+  background-color: var(--power-bg-medium);
+}
+
+.power-value-low { 
+  color: var(--power-low);
+  background-color: var(--power-bg-low);
+}
+
+.power-value-minimal { 
+  color: var(--power-minimal);
+  background-color: var(--power-bg-minimal);
+}
+
+.power-value-normal { 
+  color: var(--power-normal);
+  background-color: var(--power-bg-normal);
+}
+
+/* ===== 功率指示器 ===== */
+.power-indicator {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.power-indicator.critical {
+  color: var(--power-critical);
+  background-color: var(--power-bg-critical);
+  border: 1px solid var(--power-critical);
+}
+
+.power-indicator.high {
+  color: var(--power-high);
+  background-color: var(--power-bg-high);
+  border: 1px solid var(--power-high);
+}
+
+.power-indicator.medium {
+  color: var(--power-medium);
+  background-color: var(--power-bg-medium);
+  border: 1px solid var(--power-medium);
+}
+
+.power-indicator.low {
+  color: var(--power-low);
+  background-color: var(--power-bg-low);
+  border: 1px solid var(--power-low);
+}
+
+.power-indicator.minimal {
+  color: var(--power-minimal);
+  background-color: var(--power-bg-minimal);
+  border: 1px solid var(--power-minimal);
+}
+
+.power-indicator.normal {
+  color: var(--power-normal);
+  background-color: var(--power-bg-normal);
+  border: 1px solid var(--power-normal);
+}
+
+/* ===== 功率图表配色 ===== */
+.power-chart-critical { stroke: var(--power-critical); fill: var(--power-bg-critical); }
+.power-chart-high { stroke: var(--power-high); fill: var(--power-bg-high); }
+.power-chart-medium { stroke: var(--power-medium); fill: var(--power-bg-medium); }
+.power-chart-low { stroke: var(--power-low); fill: var(--power-bg-low); }
+.power-chart-minimal { stroke: var(--power-minimal); fill: var(--power-bg-minimal); }
+.power-chart-normal { stroke: var(--power-normal); fill: var(--power-bg-normal); }
+
+/* ===== 功率趋势指示 ===== */
+.power-trend-up {
+  color: var(--power-increasing);
+}
+
+.power-trend-down {
+  color: var(--power-decreasing);
+}
+
+.power-trend-stable {
+  color: var(--power-stable);
+}
+
+/* ===== 功率等级工具类 ===== */
+.text-power-critical { color: var(--power-critical) !important; }
+.text-power-high { color: var(--power-high) !important; }
+.text-power-medium { color: var(--power-medium) !important; }
+.text-power-low { color: var(--power-low) !important; }
+.text-power-minimal { color: var(--power-minimal) !important; }
+.text-power-normal { color: var(--power-normal) !important; }
+
+.bg-power-critical { background-color: var(--power-bg-critical) !important; }
+.bg-power-high { background-color: var(--power-bg-high) !important; }
+.bg-power-medium { background-color: var(--power-bg-medium) !important; }
+.bg-power-low { background-color: var(--power-bg-low) !important; }
+.bg-power-minimal { background-color: var(--power-bg-minimal) !important; }
+.bg-power-normal { background-color: var(--power-bg-normal) !important; }
+
+/* 风电功率 - 蓝色系 */
+.wind-power {
+    color: var(--wind-color) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    text-shadow: 0 1px 2px rgba(30, 64, 175, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.wind-power:hover {
+    transform: translateY(-1px);
+    text-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
+}
+
+/* 光伏功率 - 黄色系 */
+.solar-power {
+    color: var(--solar-color) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    text-shadow: 0 1px 2px rgba(245, 158, 11, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.solar-power:hover {
+    transform: translateY(-1px);
+    text-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+/* 制氢功率 - 绿色系 */
+.hydrogen-power {
+    color: var(--hydrogen-color) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    text-shadow: 0 1px 2px rgba(5, 150, 105, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.hydrogen-power:hover {
+    transform: translateY(-1px);
+    text-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+/* 储能功率 - 紫色系 */
+.storage-power {
+    color: var(--storage-color) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    text-shadow: 0 1px 2px rgba(124, 58, 237, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.storage-power:hover {
+    transform: translateY(-1px);
+    text-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
+}
+
+/* 电网功率 - 红色系 */
+.grid-power {
+    color: var(--grid-power-color) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    text-shadow: 0 1px 2px rgba(220, 38, 38, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.grid-power:hover {
+    transform: translateY(-1px);
+    text-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+/* 图例颜色增强 */
+.legend-color.wind-power {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+    box-shadow: 
+        0 2px 4px rgba(30, 64, 175, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.legend-color.solar-power {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%) !important;
+    box-shadow: 
+        0 2px 4px rgba(245, 158, 11, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.legend-color.hydrogen-power {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+    box-shadow: 
+        0 2px 4px rgba(5, 150, 105, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.legend-color.storage-power {
+    background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%) !important;
+    box-shadow: 
+        0 2px 4px rgba(124, 58, 237, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.legend-color.grid-power {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+    box-shadow: 
+        0 2px 4px rgba(220, 38, 38, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .wind-power,
+    .solar-power,
+    .hydrogen-power,
+    .storage-power,
+    .grid-power {
+        font-size: var(--font-size-xs) !important;
+    }
+}
+
+/* 动画效果 */
+@keyframes powerValuePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.wind-power.updating,
+.solar-power.updating,
+.hydrogen-power.updating,
+.storage-power.updating,
+.grid-power.updating {
+    animation: powerValuePulse 1.5s ease-in-out infinite;
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .wind-power { color: #0066cc !important; }
+    .solar-power { color: #cc6600 !important; }
+    .hydrogen-power { color: #006600 !important; }
+    .storage-power { color: #6600cc !important; }
+    .grid-power { color: #cc0000 !important; }
+}
+
+/* 减少动画模式 */
+@media (prefers-reduced-motion: reduce) {
+    .wind-power,
+    .solar-power,
+    .hydrogen-power,
+    .storage-power,
+    .grid-power {
+        transition: none;
+    }
+    
+    .wind-power:hover,
+    .solar-power:hover,
+    .hydrogen-power:hover,
+    .storage-power:hover,
+    .grid-power:hover {
+        transform: none;
+    }
+    
+    .wind-power.updating,
+    .solar-power.updating,
+    .hydrogen-power.updating,
+    .storage-power.updating,
+    .grid-power.updating {
+        animation: none;
+    }
+} 

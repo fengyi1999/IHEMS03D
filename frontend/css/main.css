@@ -1,0 +1,1348 @@
+/* 主样式文件 - 智慧绿氢管理系统 */
+
+/* 全局样式 */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+    background-color: var(--bg-primary, #0a0a0a);
+    color: var(--text-color, #ffffff);
+    height: 100%;
+    overflow: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--bg-gradient, linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%));
+    background-size: 100% 100%;
+    transition: background 0.3s ease;
+}
+
+/* 顶部导航栏 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--header-bg, #1a1a1a);
+    padding: 5px 20px;
+    height: 50px;
+    border-bottom: 1px solid var(--border-color, rgba(64, 64, 64, 0.5));
+    background-image: var(--header-gradient, linear-gradient(to right, rgba(26, 26, 26, 0.8), rgba(30, 30, 30, 0.8)));
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.header-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--text-color, white);
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px var(--accent-glow, rgba(0, 179, 255, 0.7));
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    left: 0;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.header-datetime {
+    font-size: 14px;
+    color: #e6e6e6;
+    position: absolute;
+    right: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 200px;
+}
+
+.simulation-time {
+    font-size: 12px;
+    color: #00aeff;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+.sim-time {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.sim-speed {
+    color: #ffaa00;
+    font-weight: bold;
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+}
+
+.user-info {
+    margin-right: 15px;
+    color: #67C23A;
+}
+
+/* 主导航菜单 */
+.main-nav {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(64, 64, 64, 0.5);
+    background-image: linear-gradient(to right, rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9));
+}
+
+.el-menu--horizontal > .el-menu-item {
+    height: 28px;
+    line-height: 28px;
+    font-size: 13px;
+    border-bottom: none;
+}
+
+.el-menu--horizontal > .el-menu-item.is-active {
+    border-bottom: none;
+    background-color: rgba(0, 179, 255, 0.2) !important;
+    color: #00aeff !important;
+}
+
+/* 主体内容区 */
+.main-content {
+    flex: 1;
+    padding: 5px 10px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 主内容容器 */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 5px;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 布局容器 */
+.layout-container {
+    display: flex;
+    height: 64%; /* 进一步增加高度，使系统采集数据区域更大 */
+    gap: 5px;
+    margin-bottom: 5px; /* 确保与下方图表间距为5px */
+    box-sizing: border-box;
+    padding: 0;
+}
+
+/* 左侧列 */
+.left-column {
+    width: 34%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* 保留小间距 */
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 右侧列 - 功率曲线 */
+.right-column {
+    width: 66%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 顶部区域 - 系统状态和社会贡献 */
+.top-section {
+    display: flex;
+    gap: 5px;
+    height: 45%; /* 减少系统状态高度，为系统采集数据区域留出更多空间 */
+    min-height: 50%;
+}
+
+/* 中间区域 - 系统采集数据 */
+.middle-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 55%; /* 增加系统采集数据区域的高度，使下方图表间距合适 */
+}
+
+/* 兼容旧版布局的样式/* 内容行 */
+.content-row {
+    display: flex;
+    gap: 5px;
+    height: 31%; /* 进一步减小下部区域高度，保持总高度不变 */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    min-height: 180px;
+}
+
+.top-row {
+    height: 25%;
+}
+
+.middle-row {
+    height: 50%;
+}
+
+.bottom-row {
+    flex: 1;
+    display: flex;
+    gap: 5px;
+}
+
+/* 底部左侧列 - 电量平衡图表区域 */
+.bottom-left-column {
+    width: 34%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+/* 底部右侧列 - 产量图表和电网负载监测区域 (水平排列) */
+.bottom-right-column {
+    width: 66%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row; /* 不再使用列布局，改为行布局（水平排列） */
+    gap: 5px; /* 两个图表区域之间的间距 */
+    height: 100% !important; /* 确保高度占满父容器 */
+}
+
+/* 电量平衡图表 */
+.power-balance {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    position: relative; /* 添加相对定位 */
+}
+
+/* 产量图表和电网负载监测 - 平分右侧空间（水平布局） */
+.production-chart,
+.grid-load {
+    width: calc(50% - 2.5px); /* 平分宽度，减去间距的一半 */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    height: 100% !important; /* 高度设为100% */
+    min-height: 0; /* 防止内容溢出 */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative; /* 添加相对定位 */
+}
+
+/* 内容卡片通用样式 */
+.content-card {
+    background-color: var(--card-bg, rgba(5, 16, 41, 0.85));
+    border-radius: 4px;
+    border: 1px solid var(--card-border, rgba(0, 174, 255, 0.3));
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: var(--shadow-default, 0 0 10px rgba(0, 0, 0, 0.3));
+}
+
+.card-title {
+    padding: 4px 8px;
+    background-color: #0f1419;
+    font-size: 13px;
+    font-weight: normal;
+    border-bottom: 1px solid var(--border-color, rgba(29, 75, 119, 0.5));
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-color, white);
+    height: 16px;
+    line-height: 13px;
+}
+
+/* 卡片标题样式 - 暗色主题 */
+.card-title {
+    background-color: #0f1419 !important;
+    color: white !important;
+    padding: 4px 8px !important;
+    font-size: 13px !important;
+    height: 16px !important;
+    line-height: 13px !important;
+    border-bottom: 1px solid rgba(29, 75, 119, 0.5) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    font-weight: normal !important;
+}
+
+.card-content {
+    padding: 5px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 系统状态卡片 */
+.system-status {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-tertiary) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.system-status::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--success) 0%, var(--info) 50%, var(--primary-color) 100%);
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.status-item {
+    text-align: center;
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all var(--transition-normal);
+}
+
+.status-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.status-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--spacing-sm);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.status-icon.online {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.status-icon.offline {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.status-icon.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+/* 电网状态区域样式 */
+.grid-status {
+    width: 50%;
+}
+
+.grid-status .grid-status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(21, 64, 106, 0.3);
+}
+
+.grid-status .grid-status-item:last-child {
+    border-bottom: none;
+}
+
+.grid-status .grid-status-left {
+    display: flex;
+    align-items: center;
+}
+
+.grid-status .grid-status-left i {
+    font-size: 18px;
+    margin-right: 8px;
+    color: #00aeff;
+}
+
+/* 上下网功率图标容器 */
+.grid-status .grid-power-icons {
+    display: flex;
+    flex-direction: column;
+    margin-right: 8px;
+    line-height: 0.8;
+}
+
+.grid-status .grid-power-icons i {
+    font-size: 14px;
+    margin: 0;
+}
+
+.grid-status .grid-status-left span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.grid-status .grid-status-right {
+    display: flex;
+    align-items: baseline;
+}
+
+.grid-status .grid-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00f0ff;
+}
+
+.grid-status .grid-unit {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-left: 4px;
+}
+
+/* 社会贡献卡片 */
+.social-contribution {
+    width: 50%;
+}
+
+.social-contribution .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.contribution-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 5px 0;
+}
+
+.contribution-item .icon {
+    font-size: 26px;
+    color: #409EFF;
+    margin-bottom: 6px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(64, 158, 255, 0.1);
+    border-radius: 50%;
+}
+
+.contribution-item .value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00ff00;
+    margin-bottom: 2px;
+}
+
+.contribution-item .label {
+    font-size: 12px;
+    color: #bbb;
+}
+
+/* 图表容器 */
+.chart {
+    width: 100% !important;
+    height: 100% !important; /* 改为100%高度，让图表填满容器 */
+    min-height: 250px; /* 设置最小高度 */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: block;
+}
+
+/* 确保所有图表容器占满父元素 */
+#powerBalanceChart, #productionChart, #gridLoadChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 功率曲线 */
+.power-curve {
+    width: 100%;
+    height: 100%;
+}
+
+.power-curve .card-content {
+    position: relative;
+    height: calc(100% - 16px); /* 减去标题高度，让内容区域填满剩余空间 */
+    display: flex;
+    flex-direction: column;
+}
+
+.power-curve .chart-legend {
+    position: absolute;
+    top: 2px;
+    right: 8px;
+    display: flex;
+    z-index: 10;
+    background: rgba(10, 14, 26, 0.85);
+    border-radius: 6px;
+    padding: 2px 6px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(14, 165, 233, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    height: 20px;
+    align-items: center;
+}
+
+.power-curve .legend-item {
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
+    font-size: 13px;
+    padding: 1px 3px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    height: 16px;
+    white-space: nowrap;
+}
+
+.power-curve .legend-item:first-child {
+    margin-left: 0;
+}
+
+.power-curve .legend-item:hover {
+    background: rgba(14, 165, 233, 0.1);
+    transform: scale(1.02);
+}
+
+.power-curve .legend-color {
+    width: 6px;
+    height: 6px;
+    margin-right: 3px;
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.power-curve .legend-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+}
+
+/* 系统数据表格 */
+.system-data {
+    width: 100%;
+}
+
+.data-table-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    background: var(--bg-tertiary);
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--divider);
+}
+
+.data-table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--divider);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.data-table tr:hover {
+    background: var(--bg-hover);
+}
+
+.data-table .status-cell {
+    text-align: center;
+}
+
+/* 电量平衡图表 */
+.power-balance-chart {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.power-balance .chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 产量图表 */
+.production-chart {
+    width: calc(11/20 * 100%);
+}
+
+.production-chart .chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 电网负载 */
+.grid-load {
+    width: calc(11/20 * 100%);
+}
+
+.grid-load .chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+    .content-row {
+        flex-direction: column;
+    }
+
+    .left-column,
+    .right-column,
+    .system-status,
+    .social-contribution,
+    .power-curve,
+    .system-data,
+    .power-balance,
+    .production-chart,
+    .grid-load {
+        width: 100%;
+    }
+}
+
+/* 能量管理页面 */
+.page-content {
+    padding: 0px 5px 5px 5px; /* 往上移5px，顶部padding改为0 */
+    height: calc(100vh - 56px); /* 往上移5px，从61px改为56px */
+    overflow: hidden;
+    box-sizing: border-box;
+    background: rgba(10, 26, 42, 0.98); /* 确保页面背景覆盖深黑色 */
+}
+
+/* 产能设置页面样式 - 缩减间距50% */
+.production-settings-page {
+    height: calc(100vh - 83px);
+    padding: 2px 5px 5px 5px; /* 从5px减少到2px，缩减50% */
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.production-layout {
+    display: flex;
+    height: 100%;
+    gap: 2px; /* 从5px减少到2px，缩减50% */
+}
+
+/* 统一配色方案 - 只有两种颜色 */
+:root {
+    --page-bg: #1a1a1a; /* 页面背景黑灰色 */
+    --content-bg: #2a2a2a; /* 内容背景灰色（与能量管理图表背景一致） */
+}
+
+/* 系统信息区域样式 - 20% 宽度 */
+.production-info-section {
+    width: 20%;
+    height: calc(100vh - 75px);
+    background: var(--page-bg);
+    border-radius: 4px;
+    border: 1px solid rgba(0, 174, 255, 0.2);
+    padding: 8px; /* 从15px减少到8px，缩减约50% */
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* 从4px减少到2px，缩减50% */
+    overflow-y: auto;
+}
+
+/* 制氢系统概览卡片高度控制 - 增加高度显示五行，增大字体后需要更多空间 */
+.production-info-section .modern-card:first-child {
+    flex: 0 0 auto;
+    max-height: 320px; /* 从300px增加到320px，适应更大字体 */
+    min-height: 300px; /* 从280px增加到300px */
+}
+
+/* 设备状态统计卡片高度控制 - 增大字体后需要更多空间 */
+.production-info-section .modern-card:nth-child(2) {
+    flex: 0 0 auto;
+    max-height: 220px; /* 从200px增加到220px，适应更大字体 */
+    min-height: 200px; /* 从180px增加到200px */
+}
+
+/* 设备信息部分 - 占用剩余空间，标题字体与modern-card-title完全一致 */
+.equipment-info {
+    flex: 1;
+    margin-top: 0;
+    width: 100%;
+    overflow-y: auto;
+    background: var(--content-bg) !important;
+    border-radius: 4px;
+    padding: 4px; /* 从8px减少到4px，缩减50% */
+    border: 1px solid rgba(0, 174, 255, 0.1);
+}
+
+/* 子标题样式 - 完全与modern-card-title保持一致 */
+.subsection-title {
+    color: var(--text-primary); /* 改为与modern-card-title一致的颜色 */
+    font-size: 16px; /* 与modern-card-title保持一致 */
+    font-weight: 600; /* 与modern-card-title保持一致 */
+    margin: 8px 0 8px 0; /* 增加边距 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* 改为与其他标题一致的边框 */
+    padding-bottom: 8px; /* 增加底部内边距 */
+    letter-spacing: 0.5px; /* 与modern-card-title保持一致 */
+}
+
+/* 故障表格样式 - 字体与制氢系统概览保持一致 */
+.fault-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px; /* 与制氢系统概览保持一致 */
+    color: #e6e6e6;
+    background-color: var(--content-bg) !important;
+}
+
+.fault-table th {
+    background-color: var(--content-bg) !important;
+    padding: 12px 8px; /* 增加内边距 */
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 14px; /* 与制氢系统概览标题一致 */
+    font-weight: 600; /* 增加字体重量 */
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fault-table td {
+    padding: 12px 8px; /* 增加内边距 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--content-bg) !important;
+    vertical-align: middle;
+    line-height: 1.3;
+    font-size: 14px; /* 与制氢系统概览数值一致 */
+}
+
+.fault-table tr:hover {
+    background-color: rgba(58, 58, 58, 0.8) !important;
+}
+
+.fault-table tr:hover td {
+    background-color: rgba(58, 58, 58, 0.8) !important;
+}
+
+/* 故障状态样式 */
+.status-unresolved {
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+.status-processing {
+    color: #ffd166;
+    font-weight: bold;
+}
+
+/* 电解槽状态区域样式 - 80% 宽度 - 缩减间距 */
+.production-units-section {
+    width: 80%;
+    height: calc(100vh - 75px);
+    overflow-y: auto;
+    background: var(--page-bg) !important;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 174, 255, 0.2);
+    padding: 8px 8px 2px 8px; /* 从15px减少到8px，缩减约50% */
+}
+
+/* 现代化卡片样式 - 缩减间距 */
+.modern-card {
+    background: var(--content-bg) !important;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.modern-card:hover {
+    border-color: var(--border-light);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+    background: var(--content-bg) !important;
+}
+
+.modern-card-header {
+    padding: 4px 8px; /* 从var(--spacing-md) var(--spacing-lg)缩减50% */
+    background: var(--content-bg) !important;
+    border-bottom: 1px solid var(--divider);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 32px; /* 从48px减少到32px */
+}
+
+.modern-card-title {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.modern-card-body {
+    flex: 1;
+    padding: 4px; /* 从var(--spacing-lg)缩减到4px */
+    overflow: hidden;
+    position: relative;
+    background: var(--content-bg) !important;
+}
+
+/* 修改制氢系统概览为5行纵向布局 */
+.info-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* 单列 */
+    grid-template-rows: repeat(5, 1fr); /* 5行 */
+    gap: 4px; /* 从8px减少到4px，缩减50% */
+    margin-top: var(--spacing-xs);
+    height: 100%;
+}
+
+.info-metric-card {
+    background: var(--content-bg) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    display: flex;
+    flex-direction: row; /* 每行内部横向排列：文字+数值 */
+    align-items: center;
+    gap: 12px;
+    transition: all var(--transition-normal);
+    height: 100%;
+}
+
+.info-metric-card:hover {
+    background: var(--content-bg) !important;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.metric-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.metric-content {
+    flex: 1;
+    text-align: left;
+    display: flex;
+    flex-direction: row; /* 文字与数值水平排列 */
+    justify-content: space-between;
+    align-items: center;
+}
+
+.metric-label {
+    font-size: 16px; /* 从14px增加2个字号到16px */
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.metric-value {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.metric-value .value {
+    font-size: 18px; /* 从16px增加2个字号到18px */
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.metric-value .unit {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* 系统效率样式 */
+.system-efficiency {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+}
+
+.efficiency-label {
+    color: var(--text-muted);
+}
+
+.efficiency-value {
+    color: var(--success);
+    font-weight: 600;
+}
+
+/* 总计单位数样式 */
+.total-units {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+
+.units-count {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* 状态统计网格 - 6个状态，2列3行 */
+.status-statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2列 */
+    grid-template-rows: repeat(3, 1fr); /* 3行 */
+    gap: 8px;
+    margin-top: var(--spacing-xs);
+    height: 100%;
+}
+
+.status-stat-item {
+    background: var(--content-bg) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    display: flex;
+    flex-direction: row; /* 文字与数值水平排列 */
+    align-items: center;
+    gap: 12px;
+    transition: all var(--transition-normal);
+    height: 100%;
+}
+
+.status-stat-item:hover {
+    background: var(--content-bg) !important;
+    transform: translateY(-1px);
+}
+
+.stat-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+    text-align: left;
+    display: flex;
+    flex-direction: row; /* 文字与数值水平排列 */
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 16px; /* 从14px增加2个字号到16px */
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.stat-value {
+    font-size: 20px; /* 从18px增加2个字号到20px */
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+/* 状态特定颜色 */
+.status-stat-item.running {
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.status-stat-item.running .stat-icon {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.status-stat-item.standby {
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.status-stat-item.standby .stat-icon {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.status-stat-item.shutdown {
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.status-stat-item.shutdown .stat-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.status-stat-item.cold-start,
+.status-stat-item.hot-start {
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.status-stat-item.cold-start .stat-icon,
+.status-stat-item.hot-start .stat-icon {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+}
+
+.status-stat-item.maintenance {
+    border-color: rgba(156, 163, 175, 0.2);
+}
+
+.status-stat-item.maintenance .stat-icon {
+    background: rgba(156, 163, 175, 0.1);
+    color: var(--text-muted);
+}
+
+/* 电解槽网格现代化 - 缩减间距 */
+.unit-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    height: 100%;
+    overflow-y: auto;
+    background: var(--page-bg) !important;
+    padding: 4px; /* 从8px减少到4px，缩减50% */
+    border-radius: 4px;
+}
+
+.unit-cell-modern {
+    background: var(--content-bg) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-lg);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    min-height: 190px; /* 从200px缩小到95%：190px */
+    max-height: 190px; /* 确保一致的高度 */
+}
+
+.unit-cell-modern:hover {
+    background: var(--content-bg) !important;
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* 电解槽顶部区域 - 25%高度，增大字体，减少留白 */
+.unit-header-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 25%;
+    padding: 6px 12px;
+    background: var(--content-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.unit-number-modern {
+    font-size: 22px; /* 保持较大字体 */
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.unit-status-modern {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 16px; /* 保持较大字体 */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 电解槽中间部分 - 45%高度，增大字体，减少gap */
+.unit-metrics-modern {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0px; /* 进一步减少间距 */
+    height: 45%;
+    padding: 2px 1px; /* 进一步减少padding */
+    background: var(--content-bg);
+    text-align: center;
+    align-items: center;
+}
+
+.unit-metric-modern {
+    text-align: center;
+    padding: 1px; /* 进一步减少padding */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.unit-metric-label {
+    font-size: 15px; /* 从13px增大一号到15px */
+    color: var(--text-muted);
+    margin-bottom: 5px; /* 增加标签和数值之间的间距，从1px增加到2px */
+    text-transform: uppercase;
+    letter-spacing: 0.1px;
+    line-height: 1;
+}
+
+.unit-metric-value {
+    font-size: 19px; /* 从16px增大一号到19px */
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+/* 电解槽底部进度条区域 - 30%高度，工业设计颜色 */
+.unit-progress-modern {
+    height: 30%;
+    padding: 4px 12px;
+    background: var(--content-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+
+.unit-progress-bar {
+    width: 100%;
+    height: 30px;
+    background: rgba(45, 45, 45, 0.8); /* 更深的工业风背景 */
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.unit-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, 
+        #ff6b35 0%,    /* 工业橙色 */
+        #f7931e 25%,   /* 橙金色 */
+        #ffd700 50%,   /* 金色 */
+        #ffb347 75%,   /* 淡橙色 */
+        #ff8c42 100%); /* 深橙色 */
+    border-radius: 14px;
+    transition: width var(--transition-normal);
+    position: relative;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+/* 增强进度条光效动画 - 工业风格 */
+.unit-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.6) 50%, 
+        transparent 100%);
+    animation: progressShimmer 2s infinite;
+    border-radius: inherit;
+}
+
+@keyframes progressShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 当功率为0或很低时的特殊样式 */
+.unit-progress-fill[data-power="zero"] {
+    background: rgba(100, 100, 100, 0.3);
+    animation: none;
+    box-shadow: none;
+}
+
+.unit-progress-fill[data-power="zero"]::after {
+    display: none;
+}
+
+/* 为不同状态的进度条添加不同工业颜色 */
+.unit-cell-modern[data-status="running"] .unit-progress-fill {
+    background: linear-gradient(90deg, #10b981 0%, #06d6a0 100%); /* 运行状态-青绿色工业风 */
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.unit-cell-modern[data-status="standby"] .unit-progress-fill {
+    background: linear-gradient(90deg, #fcd34d 0%, #fdba74 100%); /* 热备状态-浅黄橙色工业风，表现铁块加热冷却后的效果 */
+    box-shadow: 0 2px 8px rgba(252, 211, 77, 0.3);
+}
+
+.unit-cell-modern[data-status="maintenance"] .unit-progress-fill {
+    background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%); /* 维护状态-红色警告工业风，表示故障 */
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+.unit-cell-modern[data-status="shutdown"] .unit-progress-fill {
+    background: linear-gradient(90deg, #6b7280 0%, #4b5563 100%); /* 停机状态-灰色工业风 */
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+}
+
+.unit-cell-modern[data-status="cold-start"] .unit-progress-fill {
+    background: linear-gradient(90deg, #1e40af 0%, #1e3a8a 100%); /* 冷启动状态-深冷蓝色工业风 */
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.4);
+}
+
+.unit-cell-modern[data-status="hot-start"] .unit-progress-fill {
+    background: linear-gradient(90deg, #f97316 0%, #ea580c 100%); /* 热启动状态-暖橙色工业风 */
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+}
+
+/* 单位摘要样式 */
+.units-summary {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-xs);
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+}
+
+.summary-item.running {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.summary-item.standby {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* 功率进度条文本显示 - 工业风格 */
+.unit-power-progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    z-index: 2;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* 功率曲线图表图例样式 - 现代化设计 */
+.chart-legend-modern {
+    position: absolute;
+    top: 8px;
+    right: 15px;
+    display: flex;
+    gap: 15px;
+    z-index: 20;
+    background: rgba(15, 23, 42, 0.85);
+    border-radius: 8px;
+    padding: 8px 12px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.legend-item-modern {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.legend-item-modern:hover {
+    background: rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+.legend-color-modern {
+    width: 12px;
+    height: 8px;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.legend-text-modern {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+    white-space: nowrap;
+}
